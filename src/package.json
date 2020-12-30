@@ -1,0 +1,38 @@
+{
+  "name": "emaginer-marketplace",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "_comments1": "heroku will look at the start script to start our application",
+    "_comments2": "type: 'nodemon' and it will look for the start script to launch the application",
+    "start": "node bin/www.js",
+    "dev": "env-cmd -f ../config/dev.env nodemon bin/www.js",
+    "_comment3": "setting the DEBUG env variable. we can turn it on by setting an environment variable just for one process when we launch it (shell command below):",
+    "debug": "DEBUG=model:*,controller:user npm run dev",
+    "prodDB": "env-cmd -f ../config/prod.env nodemon bin/www.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "cookie-parser": "1.4.4",
+    "crypto-random-string": "^3.3.0",
+    "debug": "2.6.9",
+    "express": "^4.17.1",
+    "hbs": "4.0.4",
+    "http-errors": "1.6.3",
+    "jsdoc": "^3.6.6",
+    "mongoose": "^5.11.3",
+    "morgan": "1.9.1",
+    "nodemailer": "^6.4.17",
+    "validator": "^13.5.1"
+  },
+  "nodemonConfig": {
+    "restartable": "rs",
+    "ignore": [
+      "node_modules/*"
+    ]
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
+  }
+}
