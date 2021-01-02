@@ -21,7 +21,10 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 3. Create a local branch based on the snapshot of the remote tracking reference (i.e. tracking branch): 
  - git pull
  - git checkout -b trackingBranch origin/trackingBranch
-4. Create, edit, rename, move, or delete files in the local tracking branch then push changes to the remote.
+4. Create, edit, rename, move, or delete files in the local tracking branch.
+5. Push changes to the remote: push regularly (at least daily) to the remote to comply with the Continuous Integration process considering:
+ - pushing small patches starting from API layer then GUI
+ - Using feature toggles: feature_toggle = on during development, and releasing from main branch feature_toggle = false if the feature is not done.
 5. [Send a pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) from your branch with your proposed changes to kick off a discussion.
  - Once you're satisfied with your work, you can open a pull request to merge the changes in the current branch (the head branch) into another branch (the base branch). For more information, see "About pull requests."
  - Anyone with read permissions to a repository can create a pull request, but you must have write permissions to create a branch. If you want to create a new branch for your pull request and don't have write permissions to the repository, you can fork the repository first.
