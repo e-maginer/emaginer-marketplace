@@ -17,6 +17,11 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 
 ### GitHub Workflow
 
-
+Create a branch from the repository.
+Create, edit, rename, move, or delete files.
+Send a pull request from your branch with your proposed changes to kick off a discussion.
+Make changes on your branch as needed. Your pull request will update automatically.
+Merge the pull request once the branch is ready to be merged.
+Tidy up your branches using the delete button in the pull request or on the branches page.
 
 
