@@ -15,6 +15,20 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
  Note: One of the cardinal rules of Git is that, since so much work is local within your clone, you have a great deal of freedom to rewrite your history locally. However, once you push your work, it is a different story entirely, and you should consider pushed work as final unless you have good reason to change it. In short, you should avoid pushing your work until you’re happy with it and ready to share it with the rest of the world.
 
 ### GitHub Workflow
+1. [Create a Topic branch](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-and-deleting-branches-within-your-repository) from the repository. 
+ - You must have write access to a repository to create a branch, open a pull request, or delete and restore branches in a pull request. For more information, see "Access permissions on GitHub."
+ - 
+2. [Create protected branch](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/defining-the-mergeability-of-pull-requests) rules for the 'main' branch to ensure that collaborators on your repository cannot make irrevocable changes to branches
+3. Create a local branch based on the snapshot of the remote tracking reference (i.e. tracking branch): 
+ - git pull
+ - git checkout -b trackingBranch origin/trackingBranch
+4. Create, edit, rename, move, or delete files in the local tracking branch then push changes to the remote.
+5. Send a pull request from your branch with your proposed changes to kick off a discussion.
+ - Once you're satisfied with your work, you can open a pull request to merge the changes in the current branch (the head branch) into another branch (the base branch). For more information, see "About pull requests."
+ - 
+6. Make changes on your branch as needed. Your pull request will update automatically.
+7. Merge the pull request once the branch is ready to be merged.
+8. Tidy up your branches using the delete button in the pull request or on the branches page.
 
 
 
