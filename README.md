@@ -18,17 +18,18 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 1. [Create a Topic branch](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-and-deleting-branches-within-your-repository) from the repository. 
  - You must have write access to a repository to create a branch, open a pull request, or delete and restore branches in a pull request. For more information, see "Access permissions on GitHub."
  - 
-2. [Create protected branch](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/defining-the-mergeability-of-pull-requests) rules for the 'main' branch to ensure that collaborators on your repository cannot make irrevocable changes to branches
 3. Create a local branch based on the snapshot of the remote tracking reference (i.e. tracking branch): 
  - git pull
  - git checkout -b trackingBranch origin/trackingBranch
 4. Create, edit, rename, move, or delete files in the local tracking branch then push changes to the remote.
-5. Send a pull request from your branch with your proposed changes to kick off a discussion.
+5. [Send a pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) from your branch with your proposed changes to kick off a discussion.
  - Once you're satisfied with your work, you can open a pull request to merge the changes in the current branch (the head branch) into another branch (the base branch). For more information, see "About pull requests."
- - 
+ - Anyone with read permissions to a repository can create a pull request, but you must have write permissions to create a branch. If you want to create a new branch for your pull request and don't have write permissions to the repository, you can fork the repository first.
 6. Make changes on your branch as needed. Your pull request will update automatically.
-7. Merge the pull request once the branch is ready to be merged.
-8. Tidy up your branches using the delete button in the pull request or on the branches page.
+7. [Merge the pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/merging-a-pull-request) once the branch is ready to be merged.
+ - Anyone with push access to the repository can complete the merge (TO BE RESTRICTED FOR THE MAIN BRANCH)
+ - determine the best merge strategy (merge commit, squash and merge, or (rebase and merge) for the organization
+8. [Tidy up your branches](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/deleting-and-restoring-branches-in-a-pull-request) using the delete button in the pull request or on the branches page.
 
 
 
