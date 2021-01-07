@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import createError from 'http-errors';
-// start the replica set database using the command : run-rs -v 4.4.2 --shell
+// start the replica set database using the command : run-rs -v 4.4.2 --shell --keep --dbpath /Users/tmuhader/Dev/mongodb-data
 const connString = process.env.MONGO_DB_URL || 'mongodb://localhost:27017,localhost:27018,localhost:27019?replicaSet=rs';
     try {
         await mongoose.connect(connString, {

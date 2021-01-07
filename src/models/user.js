@@ -100,7 +100,7 @@ userSchema.pre('save',async function (next){
     if(user.isModified('password')){
         const saltRound = process.env.BCRYPT_SALT_ROUNDS;
         const saltObject = await bcrypt.genSalt(parseInt(saltRound));
-        user.password = await bcrypt.hash(user.password,saltObject);
+        user.password = await bcrypt.hash(user.password, saltObject);
     }
     next();
 })

@@ -12,7 +12,7 @@ import morgan from 'morgan';
 
 //The express() function is a top-level function exported by the express module (substack pattern, NodeJS  deign patterns)
 const app = express();
-
+const isDevelopment = process.env.NODE_ENV === 'development';
 // view engine setup
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,7 +22,9 @@ app.set('view engine', 'hbs');
 morgan allows for showing HTTP logs in the console which helps in debugging. we can use 'combined' instead
 of 'tiny' or 'dev' to get more verbose logs
 */
-app.use(morgan('dev'));
+if(isDevelopment) {
+  app.use(morgan('dev'));
+}
 
 //this is to enable express to automatically parse incoming JSON in the request into JS object that can be
 // accessed using request.body and express.urlencoded() to parse forms fields into the body property.
@@ -43,21 +45,28 @@ app.use(function(req, res, next){
 
 // error handler for API
 app.use(function(err, req, res, next) {
-  //@todo log error using winston
-  console.log('error status code', err.status);
-  console.log('error message', err.message);
-  console.log('erro trace', err.stack);
   /*
   If you call next() with an error after you have started writing the response (for example, if you encounter an error while streaming
   the response to the client) the Express default error handler closes the connection and fails the request. So when you add a custom
    error handler, you must delegate to the default Express error handler, when the headers have already been sent to the client:
    */
-  if(res.headersSent){
+  if(res.headersSent) {
     next(err);
   }
   //If the error did not originate from createError, it will not have a status property. So set the status code to 500 Internal Server Error
   //res.status(err.status||500).send({message:err.message});
-  res.status(err.status||500).send(err.errors);
+  res.status(err.status||500);
+  //@todo log error using winston
+  if(err.status >= 500) {
+    console.log('error status code', err.status);
+    console.log('error message', err.message);
+    console.log('erro trace', err.stack);
+    //send error messages only in case the error is not a Server error
+    if(!isDevelopment) {
+      err.errors = {};
+    }
+  }
+  res.send(err.errors);
 });
 
 export default app;
