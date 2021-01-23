@@ -33,7 +33,7 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 8. [Send a pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) from your branch with your proposed changes to kick off a discussion.
  - Once you're satisfied with your work, you can open a pull request to merge the changes in the current branch (the head branch) into another branch (the base branch). For more information, see "About pull requests."
  - Anyone with read permissions to a repository can create a pull request, but you must have write permissions to create a branch. If you want to create a new branch for your pull request and don't have write permissions to the repository, you can fork the repository first.
-9. Make changes on your branch as needed. Your pull request will update automatically.
+9. [Review changes in pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reviewing-changes-in-pull-requests) and Make changes on your branch as needed. Your pull request will update automatically.
 10. [Merge the pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/merging-a-pull-request) Once your pull request has been reviewed and the branch passes your tests, you can deploy your changes to verify them in production. 
  - Anyone with push access to the repository can complete the merge **(TO BE RESTRICTED FOR THE MAIN BRANCH)**
  - determine the best merge strategy (merge commit, squash and merge, or (rebase and merge) for the organization
