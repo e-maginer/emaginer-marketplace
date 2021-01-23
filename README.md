@@ -40,7 +40,11 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
  - determine the best merge strategy (merge commit, squash and merge, or (rebase and merge) for the organization
 12. Run automated Acceptance testing 
  - If these automated tests fail, the team stops what they are doing to fix the problem immediately or revert the change if it can't be fixed in a few minutes. This ensures that the software in the trunck is always in a working state
-13. [Tidy up your branches](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/deleting-and-restoring-branches-in-a-pull-request) using the delete button in the pull request or on the branches page.
+13. Checkout the main branch locally, Pull the merge commit (resulting from the pull request) and delete the branch
+ - git checkout main
+ - git pull
+ - git branch -d express-validator
+14. [Tidy up your branches](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/deleting-and-restoring-branches-in-a-pull-request) using the delete button in the pull request or on the branches page.
 
 
 
