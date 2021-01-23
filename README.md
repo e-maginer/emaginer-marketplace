@@ -46,6 +46,7 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
  - git pull
  - git branch -d express-validator
 14. [Tidy up your branches](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/deleting-and-restoring-branches-in-a-pull-request) using the delete button in the pull request or on the branches page.
+- delete the remote-tracking branch locally by typing git fetch -p 
 
 
 
