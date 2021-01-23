@@ -34,12 +34,13 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
  - Once you're satisfied with your work, you can open a pull request to merge the changes in the current branch (the head branch) into another branch (the base branch). For more information, see "About pull requests."
  - Anyone with read permissions to a repository can create a pull request, but you must have write permissions to create a branch. If you want to create a new branch for your pull request and don't have write permissions to the repository, you can fork the repository first.
 9. [Review changes in pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/reviewing-changes-in-pull-requests) and Make changes on your branch as needed. Your pull request will update automatically.
-10. [Merge the pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/merging-a-pull-request) Once your pull request has been reviewed and the branch passes your tests, you can deploy your changes to verify them in production. 
+10. If the pull request has merge conflicts, or if you'd like to test the changes before merging, you can [check out the pull request locally](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/checking-out-pull-requests-locally) and merge it using the command line.
+11. [Merge the pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/merging-a-pull-request) Once your pull request has been reviewed and the branch passes your tests, you can deploy your changes to verify them in production. 
  - Anyone with push access to the repository can complete the merge **(TO BE RESTRICTED FOR THE MAIN BRANCH)**
  - determine the best merge strategy (merge commit, squash and merge, or (rebase and merge) for the organization
-11. Run automated Acceptance testing 
+12. Run automated Acceptance testing 
  - If these automated tests fail, the team stops what they are doing to fix the problem immediately or revert the change if it can't be fixed in a few minutes. This ensures that the software in the trunck is always in a working state
-12. [Tidy up your branches](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/deleting-and-restoring-branches-in-a-pull-request) using the delete button in the pull request or on the branches page.
+13. [Tidy up your branches](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/deleting-and-restoring-branches-in-a-pull-request) using the delete button in the pull request or on the branches page.
 
 
 
