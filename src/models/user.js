@@ -60,6 +60,7 @@ const userSchema  = new mongoose.Schema({
     },
     status: {
         type: String,
+        required: true,
         uppercase: true,
         enum: Object.values(Statuses),
         default: Statuses.NOT_INITIALIZED
@@ -67,21 +68,44 @@ const userSchema  = new mongoose.Schema({
 },{
     timestamps: true
 });
+//copy the literal object containing constant variables into the user model statics
+Object.assign(userSchema.statics,{Genders,Statuses});
 
-Object.assign(userSchema.statics,{Genders: Genders,Statuses: Statuses});
-
-function validationErrorsFormatter(err){
-    let errors = {};
+/**
+ * this function format the validation error returned by Mongoose as per Emaginer error format
+ * err{
+  "status": 400,
+  "stack": "error stacktrace",
+  "errors": {
+    "globalMessage": "The provided details is registered already." //in case of error message not associated with any path/parameter
+    "name": {
+        "msg": "name is invalid",
+        "value": "",
+        "param": "name"
+    },
+    "password": {
+        "msg": "please enter a valid password",
+        "value": "",
+        "param": "password"
+    }
+  }
+}
+ * @param err
+ */
+function validationErrorsFormatter(err) {
+    let embeddedErrors = {};
     if(err.name ==="ValidationError"){
         err.status =400;
-        // get an array of all property keys (paths' names) in the err.errors object. And for each error in path, add a new property
-        // in the errors object where the property key is the path name (errors.key but since key is a variable then we use the bracket notation)
-        // and the value of the property key is only the error message as opposed to a long message used by the built-in err.errors object.
+        // get an array of all property keys (paths' names) in the err.embeddedErrors object. And for each error in path, add a new property
+        // in the embeddedErrors object where the property key is the path name (embeddedErrors.key but since key is a variable then we use the bracket notation)
+        // and the value of the property key is only the error message as opposed to a long message used by the built-in err.embeddedErrors object.
         debug(`content of Object.entries(err.errors): ${Object.entries(err.errors) }`);
         Object.keys(err.errors).forEach((key)=>{
-            errors[key] = err.errors[key].message;
+            embeddedErrors[key] = {
+                'msg' : err.errors[key].message,
+                'param' : key
+            };
         });
-
     }
     // Uniqueness in Mongoose is not a validation parameter (like required); it tells Mongoose to create a unique index
     // in MongoDB for that field. The uniqueness constraint is handled entirely in the MongoDB server. When you add a
@@ -89,10 +113,13 @@ function validationErrorsFormatter(err){
     if(err.name === 'MongoError' && err.code === 11000){
         err.status =400;
         Object.keys(err.keyPattern).forEach((key)=>{
-            errors[key] = `value already exist`;
+            embeddedErrors[key] = {
+                    'msg' : `value already exist`,
+                    'param' : key
+            };
         })
     }
-    err.errors = errors;
+    err.errors = embeddedErrors;
 }
 
 userSchema.pre('save',async function (next){
@@ -123,4 +150,4 @@ userSchema.post('update',function (err,doc,next){
 })
 
 
-export default mongoose.model('User',userSchema);
+export default mongoose.model('User', userSchema);

@@ -47,7 +47,7 @@ class EmailService{
        });
     }
    async sendEmail(to, template, params){
-      const mailOptions = getTemplateDefinition(template,params);
+      const mailOptions = getTemplateDefinition(template, params);
       mailOptions.to = to;
       let info =  await this.transporter.sendMail(mailOptions);
       console.log(`Email preview URL is ${nodeMailer.getTestMessageUrl(info)}`);
