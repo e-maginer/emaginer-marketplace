@@ -61,7 +61,7 @@ app.use(function(err, req, res, next) {
     console.log('error status code', err.status);
     console.log('error message', err.message);
     console.log('erro trace', err.stack);
-    //send error messages only in case the error is not a Server error
+    // in case of production, send error messages only in case the error is not a Server error
     if(!isDevelopment) {
       err.errors = {};
     }
