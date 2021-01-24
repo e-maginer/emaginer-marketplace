@@ -26,7 +26,8 @@
     "mongoose": "^5.11.3",
     "morgan": "1.9.1",
     "nodemailer": "^6.4.17",
-    "validator": "^13.5.1"
+    "validator": "^13.5.1",
+    "winston": "^3.3.3"
   },
   "nodemonConfig": {
     "restartable": "rs",

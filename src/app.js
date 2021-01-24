@@ -6,6 +6,7 @@ import {fileURLToPath} from 'url';
 import {dirname,join} from 'path';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
+import createLogger from './utils/logger.js'
 // import {createRequire} from 'module';
 // const require = createRequire(import.meta.url);
 
@@ -21,6 +22,9 @@ app.set('view engine', 'hbs');
 /*
 morgan allows for showing HTTP logs in the console which helps in debugging. we can use 'combined' instead
 of 'tiny' or 'dev' to get more verbose logs
+to enable Node to read the env variables from the Env files during debugging in WS, add the following to
+the 'Node parameters' field in the Debug configuration window
+src/node_modules/.bin/env-cmd -f config/dev.env
 */
 if(isDevelopment) {
   app.use(morgan('dev'));
@@ -58,12 +62,17 @@ app.use(function(err, req, res, next) {
   res.status(err.status||500);
   //@todo log error using winston
   if(err.status >= 500) {
-    console.log('error status code', err.status);
-    console.log('error message', err.message);
-    console.log('erro trace', err.stack);
+    const logger = createLogger();
+    logger.error({
+      statusCode: err.status,
+      message: err.message,
+      trace: err.stack
+    })
     // in case of production, send error messages only in case the error is not a Server error
     if(!isDevelopment) {
-      err.errors = {};
+      err.errors = {
+        globalMessage: 'Server error occurred! please try again'
+      };
     }
   }
   res.send(err.errors);
