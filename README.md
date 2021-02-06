@@ -7,10 +7,10 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
  - [Setup your commit email address on GitHub](https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address#setting-your-commit-email-address-on-github)
  - keep your email address private when performing web-based Git operations by clicking "Keep my email address private"
  - [Setup your commit email address in Git to use GitHub-provided no-reply email address](https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address#setting-your-commit-email-address-in-git) 
- 3. [Block command line pushes that expose your personal email address](https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-user-account/blocking-command-line-pushes-that-expose-your-personal-email-address)
- 4. [Authenticate with GitHub from Git using HTTPS](https://docs.github.com/en/free-pro-team@latest/github/using-git/which-remote-url-should-i-use#cloning-with-https-urls): The next time you clone an HTTPS URL that requires authentication, Git will prompt you for your username and password. When Git prompts you for your password, enter your personal access token (PAT) instead. Password-based authentication for Git is deprecated, and using a PAT is more secure. For more information, see "[Creating a personal access token.](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)".
+3. [Block command line pushes that expose your personal email address](https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-user-account/blocking-command-line-pushes-that-expose-your-personal-email-address)
+4. [Authenticate with GitHub from Git using HTTPS](https://docs.github.com/en/free-pro-team@latest/github/using-git/which-remote-url-should-i-use#cloning-with-https-urls): The next time you clone an HTTPS URL that requires authentication, Git will prompt you for your username and password. When Git prompts you for your password, enter your personal access token (PAT) instead. Password-based authentication for Git is deprecated, and using a PAT is more secure. For more information, see "[Creating a personal access token.](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)".
   - To be able to retrieve data from a repository hosted on GitHub, or share your projects, you need to register your GitHub account in IntelliJ IDEA (WebStorm). For more information, see [Register a GitHub account](https://www.jetbrains.com/help/idea/github.html#register-account) 
-  5. [Ignoring files](https://docs.github.com/en/free-pro-team@latest/github/using-git/ignoring-files): use the .gitignore file in the repository's root directory to share the ignore rules with other users who clone the repository. Optionally, you can use ".git/info/exclude" file for locally-generated files that you don't expect other users to generate, such as files created by your editor. 
+5. [Ignoring files](https://docs.github.com/en/free-pro-team@latest/github/using-git/ignoring-files): use the .gitignore file in the repository's root directory to share the ignore rules with other users who clone the repository. Optionally, you can use ".git/info/exclude" file for locally-generated files that you don't expect other users to generate, such as files created by your editor. 
  
  Note: One of the cardinal rules of Git is that, since so much work is local within your clone, you have a great deal of freedom to rewrite your history locally. However, once you push your work, it is a different story entirely, and you should consider pushed work as final unless you have good reason to change it. In short, you should avoid pushing your work until you’re happy with it and ready to share it with the rest of the world.
 
@@ -18,8 +18,10 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 1. [Create a Topic branch](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-and-deleting-branches-within-your-repository) from the repository. 
  - You must have write access to a repository to create a branch, open a pull request, or delete and restore branches in a pull request. For more information, see "Access permissions on GitHub."
 2. Create a local branch based on the snapshot of the remote tracking reference (i.e. tracking branch): 
+```
  - git pull
  - git checkout -b trackingBranch origin/trackingBranch
+```
 3. Create, edit, rename, move, or delete files in the local tracking branch.
 4. Run automated unit tests locally before committing code: in order to ensure trunk is kept in a working state, it's essential that tests are run against code changes before commit
 5. Whenever you add, edit, or delete a file, you're making a commit, and adding them to your branch. This process of adding commits keeps track of your progress as you work on a feature branch. Furthermore, each commit is considered a separate unit of change. This lets you roll back changes if a bug is found, or if you decide to head in a different direction. The followig list outlines some of Commit guidlines:
@@ -42,9 +44,11 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 12. Run automated Acceptance testing 
  - If these automated tests fail, the team stops what they are doing to fix the problem immediately or revert the change if it can't be fixed in a few minutes. This ensures that the software in the trunck is always in a working state
 13. Checkout the main branch locally, Pull the merge commit (resulting from the pull request) and delete the branch
+```
  - git checkout main
  - git pull
  - git branch -d express-validator
+```
 14. [Tidy up your branches](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/deleting-and-restoring-branches-in-a-pull-request) using the delete button in the pull request or on the branches page.
 - delete the remote-tracking branch locally by typing git fetch -p 
 

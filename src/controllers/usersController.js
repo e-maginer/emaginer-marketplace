@@ -6,14 +6,15 @@ import SecretCode from '../models/secretCode.js';
 import emailService from "../utils/emailService.js";
 import {formattedValidationResult} from "./controllerHelpers.js";
 import {body, param, validationResult} from "express-validator";
-
+//todo replace debug with Winston debug commands
 const debug = debugLib('controller:user');
 
 
 // export an anonymous object literal exposing all the controller API functions. This instance is cached by ES module system
-// and shared across all clients
-// This is convenient and encourage the single-responsibility principle and
-// expose only one clear interface, which provides an entry point for the module.
+// and shared across all clients.
+// When we import this default object, most module bundlers will consider the entire object being used and they won't be able
+// to eliminate any unused code from the exported functionality. This is fine in this case, as the consumers (Routers)
+// of the controllers are expected to use most of their APIs
 export default {
     /**
      * validate function: validate and sanitize the input provided by the user in the request (body or params)
