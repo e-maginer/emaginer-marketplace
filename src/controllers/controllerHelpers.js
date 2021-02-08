@@ -1,4 +1,4 @@
-import {validationResult} from "express-validator";
+import { validationResult } from "express-validator";
 
 // it should written as a function expression, as the function definition should be executed at the moment of formatting
 // an existing error in the request (function must not be hoisted)

@@ -30,6 +30,7 @@ function getTemplateDefinition(template, params){
    return mailOptions;
 }
 class EmailService{
+
     constructor() {
        this.templates = Templates;
 //todo replace with actual email service from Heroku in production
