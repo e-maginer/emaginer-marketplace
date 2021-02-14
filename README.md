@@ -29,7 +29,7 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 6. Push changes to the remote: push to the remote at least once a day (and potentially several times) to comply with the Continuous Integration practice considering:
  - pushing small patches starting from API layer then GUI
  - Using feature toggles: feature_toggle = on during development, and releasing from main branch feature_toggle = false if the feature is not done (anything in the main branch is always deployable.).
-7. Run the automated Continous Integration pipeline to allow pull request merges when all tests have passed.
+7. Run the automated Continuous Integration pipeline to allow pull request merges when all tests have passed (this is to make sure the code from multiple developers working on the same branch integrate together without issues).
 8. [Send a pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request) from your branch with your proposed changes to kick off a discussion.
  - Once you're satisfied with your work, you can open a pull request to merge the changes in the current branch (the head branch) into another branch (the base branch). For more information, see "About pull requests."
  - classify pull requests by [applying labels](https://docs.github.com/en/github/managing-your-work-on-github/managing-labels#applying-labels-to-issues-and-pull-requests)
@@ -39,7 +39,7 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 11. [Merge the pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/merging-a-pull-request) Once your pull request has been reviewed and the branch passes your tests, you can deploy your changes to verify them in production. 
  - Anyone with push access to the repository can complete the merge **(TO BE RESTRICTED FOR THE MAIN BRANCH)**
  - determine the best merge strategy (merge commit, squash and merge, or (rebase and merge) for the organization
-12. Run automated Acceptance testing 
+12. Run automated Acceptance testing (this is to test the integration of possibly multiple branches together) 
  - If these automated tests fail, the team stops what they are doing to fix the problem immediately or revert the change if it can't be fixed in a few minutes. This ensures that the software in the trunck is always in a working state
 13. Checkout the main branch locally, Pull the merge commit (resulting from the pull request) and delete the branch
  - git checkout main
