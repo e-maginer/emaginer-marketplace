@@ -5,15 +5,17 @@ import cryptoRandomString from 'crypto-random-string';
 import SecretCode from '../models/secretCode.js';
 import emailService from "../utils/emailService.js";
 import {formattedValidationResult} from "./controllerHelpers.js";
-import {body, param, validationResult} from "express-validator";
-
+import {body, param } from "express-validator";
+import createLogger from "../utils/logger.js";
+//todo replace debug with Winston debug commands
 const debug = debugLib('controller:user');
 
 
 // export an anonymous object literal exposing all the controller API functions. This instance is cached by ES module system
-// and shared across all clients
-// This is convenient and encourage the single-responsibility principle and
-// expose only one clear interface, which provides an entry point for the module.
+// and shared across all clients.
+// When we import this default object, most module bundlers will consider the entire object being used and they won't be able
+// to eliminate any unused code from the exported functionality. This is fine in this case, as the consumers (Routers)
+// of the controllers are expected to use most of their APIs
 export default {
     /**
      * validate function: validate and sanitize the input provided by the user in the request (body or params)
@@ -22,10 +24,13 @@ export default {
      * @author Tristan Muhader
      * the error message has the JSON format:
      * err{
+   // status inherited from parent prototype
   "status": 400,
   "stack": "error stacktrace",
+  //this is what is returned to the consumer
   "errors": {
-    "globalMessage": "The provided details is registered already." //in case of error message not associated with any path/parameter
+    "globalMessage": "no email template configured" //in case of error message not associated with any path/parameter
+    or
     "name": {
         "msg": "name is invalid",
         "value": "",
@@ -113,6 +118,18 @@ export default {
                 throw error;
             }
             const user = new User(req.body);
+            // logging the request params
+            // To use delete on a Mongoose path (password), you would need to convert the model document into a plain JavaScript object
+            // by calling toObject
+            const loggedUser = user.toObject();
+            delete loggedUser.password;
+            const logger = createLogger('server.endpoint.post.register.userController.createUser');
+            logger.info({
+                message: 'enter createUser()',
+                remoteAddress: req.connection.remoteAddress,
+                body: JSON.stringify(loggedUser),
+                correlation: session.id
+            });
             const existingUser = await User.findOne({email: user.email});
             if (existingUser instanceof User) {
                 const error = createError(400);
@@ -121,6 +138,7 @@ export default {
                 }
                 throw error;
             }
+            // todo delete the password from the returned response object
             let savedUser = await user.save({ session });
             //${req.protocol}://${req.hostname}${req.originalUrl}
             const baseUrl = `${req.protocol}://${req.get('host')}`;
@@ -134,16 +152,25 @@ export default {
             await emailService.sendEmail(savedUser.email, emailService.templates.REGISTRATION, {activationUrl: url});
             await session.commitTransaction();
             session.endSession();
+            logger.info({
+                message: 'closing createUser()',
+                remoteAddress: req.connection.remoteAddress,
+                correlation: session.id
+            })
             res.status(201).send({savedUser});
         } catch (e) {
             await session.abortTransaction();
+            // add the session ID to the error so it can be logged
+            e.correlation= session.id;
+            // passing the label to be logged by the app.js module when creating the logger
+            e.label= 'server.endpoint.post.register.userController.createUser';
             session.endSession();
             debug(`error in user controller ${e.message} `)
             // For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass
             // them to the next() function, where Express or your custom error handler will catch and process them
             if (!(e.errors instanceof Object))
                 e.errors = {
-                    globalMessage: e.message
+                    globalMessage: e.message,
                 };
             next(e);
         }
@@ -159,10 +186,11 @@ export default {
                 error.errors = validationError.mapped();
                 throw error;
             }
-            const filter = {_id: req.params.userID};
+            let filter = {_id: req.params.userID};
             const update = {updatedAt: new Date()};
             const opts = {session};
-            // using findOneAndUpdate to enable a "write Lock" to avoid concurrent transactions from modifying the user document
+            // using findOneAndUpdate to enable a "write Lock" (by updating the updatedAt property) to avoid concurrent
+            // transactions from modifying the user document after being read inside the trx
             const existingUser = await User.findOneAndUpdate(filter, update, opts);
             if (!(existingUser instanceof User))
                 throw createError(401, 'the provided user does not exist');
@@ -171,12 +199,23 @@ export default {
             // If you get a Mongoose document from findOne() or find() using a session, the document will keep
             // a reference to the session and use that session for save(). To get/set the session associated with
             // a given document, use doc.$session().
-            const existingCode = await SecretCode.findOne({
+            filter = {
                 email: existingUser.email,
                 code: req.params.code
-            }, null, {session});
+            }
+            const existingCode = await SecretCode.findOne(filter, null, {session});
             if (!(existingCode instanceof SecretCode))
                 throw createError(401, 'the provided code does not exist, please generate a new code');
+
+            // logging the request params
+            const logger = createLogger('server.endpoint.post.verify-account.userController.verifyUser');
+            logger.info({
+                message: 'enter verifyUser()',
+                remoteAddress: req.connection.remoteAddress,
+                body: JSON.stringify(filter),
+                correlation: session.id
+            })
+
             // update user status to active
             existingUser.status = User.Statuses.ACTIVE;
             await existingUser.save();
@@ -187,16 +226,25 @@ export default {
             // send confirmation email
             await emailService.sendEmail(existingUser.email, emailService.templates.ACTIVATION);
             await session.commitTransaction();
+           // logging end function
+            logger.info({
+                message: 'closing verifyUser()',
+                remoteAddress: req.connection.remoteAddress,
+                correlation: session.id
+            })
             res.send({existingUser});
         } catch (e) {
             await session.abortTransaction();
+            // add the session ID to the error so it can be logged
+            e.correlation= session.id;
+            e.label= 'server.endpoint.post.verify-account.userController.verifyUser';
             session.endSession();
             debug(`error in user controller ${e.message} `)
             // For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass
             // them to the next() function, where Express or your custom error handler will catch and process them
             if (!(e.errors instanceof Object))
                 e.errors = {
-                    globalMessage: e.message
+                    globalMessage: e.message,
                 };
             next(e);
         }

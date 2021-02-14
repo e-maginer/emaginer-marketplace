@@ -6,12 +6,18 @@ import {fileURLToPath} from 'url';
 import {dirname,join} from 'path';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
+import createLogger from './utils/logger.js'
 // import {createRequire} from 'module';
 // const require = createRequire(import.meta.url);
 
 
 //The express() function is a top-level function exported by the express module (substack pattern, NodeJS  deign patterns)
 const app = express();
+/*
+to enable Node to read the env variables from the Env files during debugging in WS, add the following to
+the 'Node parameters' field in the Debug configuration window
+src/node_modules/.bin/env-cmd -f config/dev.env
+ */
 const isDevelopment = process.env.NODE_ENV === 'development';
 // view engine setup
 const __filename = fileURLToPath(import.meta.url);
@@ -20,7 +26,8 @@ app.set('views', join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 /*
 morgan allows for showing HTTP logs in the console which helps in debugging. we can use 'combined' instead
-of 'tiny' or 'dev' to get more verbose logs
+of 'tiny' or 'dev' to get more verbose logs.
+todo use Winston to log messages from Morgan https://coralogix.com/log-analytics-blog/complete-winston-logger-guide-with-hands-on-examples/
 */
 if(isDevelopment) {
   app.use(morgan('dev'));
@@ -56,14 +63,20 @@ app.use(function(err, req, res, next) {
   //If the error did not originate from createError, it will not have a status property. So set the status code to 500 Internal Server Error
   //res.status(err.status||500).send({message:err.message});
   res.status(err.status||500);
-  //@todo log error using winston
   if(err.status >= 500) {
-    console.log('error status code', err.status);
-    console.log('error message', err.message);
-    console.log('erro trace', err.stack);
+    const logger = createLogger(err.label);
+    logger.error({
+      statusCode: err.status,
+      message: err.message,
+      trace: err.stack,
+      remoteAddress: req.connection.remoteAddress,
+      correlation: err.correlation
+    })
     // in case of production, send error messages only in case the error is not a Server error
     if(!isDevelopment) {
-      err.errors = {};
+      err.errors = {
+        globalMessage: 'Server error occurred! please try again'
+      };
     }
   }
   res.send(err.errors);

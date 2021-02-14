@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import validator from 'validator';
 import '../connections/defaultConnect.js';
 import debugLib from 'debug';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const debug = debugLib('model:user');
 const Genders = Object.freeze({
@@ -148,6 +148,8 @@ userSchema.post('update',function (err,doc,next){
     validationErrorsFormatter(err);
     next(err);
 })
+
+// overwrite the toJSON() to delete sensitive data from the response. However, this
 
 
 export default mongoose.model('User', userSchema);
