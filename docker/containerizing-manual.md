@@ -14,7 +14,7 @@ No. to be defined.
 ## Source code and build instructions
   
 The next step is to locate all the source code and other assets, such as JS, images and CSS and HTML files that are part of the application. 
-Ideally, they should be located in a single folder (src folder). This folder will be the root of our project and can have as many 
+Ideally, they should be located in a single folder (Emaginer-marketplace folder). This folder will be the root of our project and can have as many 
 subfolders as needed. This project root folder will be the context during the build of the container image we want to create for 
 our legacy application. Remember, the Docker builder only includes files in the build that are part of that context; in our case,
  that is the root project folder.

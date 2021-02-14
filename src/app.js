@@ -64,11 +64,13 @@ app.use(function(err, req, res, next) {
   //res.status(err.status||500).send({message:err.message});
   res.status(err.status||500);
   if(err.status >= 500) {
-    const logger = createLogger('app.js');
+    const logger = createLogger(err.label);
     logger.error({
       statusCode: err.status,
       message: err.message,
-      trace: err.stack
+      trace: err.stack,
+      remoteAddress: req.connection.remoteAddress,
+      correlation: err.correlation
     })
     // in case of production, send error messages only in case the error is not a Server error
     if(!isDevelopment) {

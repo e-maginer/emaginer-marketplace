@@ -149,5 +149,7 @@ userSchema.post('update',function (err,doc,next){
     next(err);
 })
 
+// overwrite the toJSON() to delete sensitive data from the response. However, this
+
 
 export default mongoose.model('User', userSchema);
