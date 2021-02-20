@@ -66,11 +66,12 @@ docker image build -t emaginer-dev-img -f docker/DockerfileDev .
  docker image build -t emaginer-prod-img -f docker/Dockerfile .
 ``
 
-3. Verify the image history
+3.Verify the image history
 ``
 docker image history emaginer-dev
 ``
-4. Spawn the API container:
+
+4.Spawn the API container:
 - Dev:
 
 ``
