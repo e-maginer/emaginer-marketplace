@@ -85,6 +85,7 @@ export default {
                         }),
                     body('gender', 'please select gender')
                         .optional({checkFalsy: true})
+                        // return an array with the values of the Genders object (object.values()) and check if the value provided is within that array
                         .isIn(Object.values(User.Genders)),
                     body('dob', 'Date of birth is invalid')
                         .optional({checkFalsy: true})
@@ -146,6 +147,7 @@ export default {
             const code = cryptoRandomString({length: 6, type: 'url-safe'});
             let url = `${baseUrl}/users/verify-account/${savedUser._id}/${code}`;
             /*const activationCode = new SecretCode({email: savedUser.email,code});
+            // To get/set the session associated with a given document, use doc.$session().
             activationCode.$session(session);
             await activationCode.save();*/
             await SecretCode.create([{email: savedUser.email, code}], {session});

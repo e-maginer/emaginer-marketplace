@@ -68,7 +68,7 @@ const userSchema  = new mongoose.Schema({
 },{
     timestamps: true
 });
-//copy the literal object containing constant variables into the user model statics
+// copy the literal object containing constant variables into the user model statics
 Object.assign(userSchema.statics,{Genders,Statuses});
 
 /**
@@ -149,7 +149,15 @@ userSchema.post('update',function (err,doc,next){
     next(err);
 })
 
-// overwrite the toJSON() to delete sensitive data from the response. However, this
-
+// Overwrite the toJSON() to delete sensitive user data from the response. In Mongoose, getters/setters allow you to execute
+// custom logic when getting or setting a property/path on a document.
+// Another useful feature of getters is that Mongoose applies getters when converting a document to JSON, including when
+// you call Express' res.json() or res.send() function with a Mongoose document. but here it will not be applied as
+// we have overwritten the toJSON function.
+userSchema.methods.toJSON = function() {
+    const userObject = this.toObject();
+    delete userObject.password;
+    return userObject;
+}
 
 export default mongoose.model('User', userSchema);
