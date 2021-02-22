@@ -20,7 +20,8 @@ Emaginer marketplace: a digital store for online retail of men’s, women’s, a
 2. Create a local branch based on the snapshot of the remote tracking reference (i.e. tracking branch): 
 ```
  - git pull
- - git checkout -b trackingBranch origin/trackingBranch
+ - git checkout -b trackingBranch origin/trackingBranch // or If the branch name you’re trying to checkout (a) doesn’t exist and (b) exactly matches a name 
+on only one remote, Git will create a tracking branch for you uisng the shortcut: git checkout trackingBranch
 ```
 3. Create, edit, rename, move, or delete files in the local tracking branch.
 4. Run automated unit tests locally before committing code: in order to ensure trunk is kept in a working state, it's essential that tests are run against code changes before commit
