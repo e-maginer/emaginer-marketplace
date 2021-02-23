@@ -1,12 +1,9 @@
 #This image is based on the popular Alpine Linux project, available in the alpine official image.
 #Alpine Linux is much smaller than most distribution base images (~5MB), and thus leads to much slimmer images in general.
 FROM node:14.13.0-alpine
-RUN mkdir -p /emaginer-app
-WORKDIR /emaginer-app
-
-#RUN npm --prerfix src install
-#COPY . .
+#RUN mkdir -p /emaginer-app
 RUN npm install nodemon -g
+WORKDIR /emaginer-app
 EXPOSE 3000
 ENTRYPOINT ["npm"]
 CMD ["run", "dev"]
