@@ -67,8 +67,10 @@ The most basic Continuous Integration process is called a Commit pipeline.
 The CI phase provides the first feedback to developers. As its name indicates, starts by checking out the code from the repository, 
 compiles it (install dependencies), runs unit tests, and verifies the code quality. 
 The build should take no more than 5 minutes.  
-        1. Create the Jenkinsfile including the Commit pipeline, and push into the GitHub repository.
-        2. Configure the build trigger (external by Githb) and notifications in Jenkins
+        1. Create the Jenkinsfile including the Commit pipeline, and push into the GitHub repository.  
+        2. Configure Jenkins to checkout/clone the codebase from GitHub: new Item => Pipeline=> Configure => Advanced Project Options => enter the repository URL and credentials (password is the Personal Access Token).  
+            - to select a specific branch rather than main, in the Pipeline General tab => tick the option 'This project is parameterized' =>  
+        3. Configure the build trigger (external by Githb) and notifications in Jenkins
         2. Push the code to the remote repository (to the feature branch (Head branch) then when merged with the main (Base branch))
         3. CI process will be triggered by the commit pipeline by running the checkout, build, unit tests and possible code quality
 ### Automated Acceptance
