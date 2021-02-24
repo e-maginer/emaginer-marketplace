@@ -69,9 +69,10 @@ The actor here is our application, which needs to be authenticated and authorize
     ``
     
 4.Spawn the API container:  
-    - WebStorm: run the docker configuration as in the below screenshot to test a containerized version of the application (this
-    will create/re-build an image based on the provided Dockerfile and then spawn a container off this image ) :  
-        ![WebStorm Docker Configurations](WS-Docker-configuration.png)       
+    - WebStorm: run the docker configuration as in the below screenshot to test a containerized version of the application. This
+    will create/re-build an image based on the provided Dockerfile and then spawn a container off this image. The DockerfileDev is authored
+    to call the script 'npm un dev' which invokes nodemon, that is, we are having our application run in a container with a host volume containing the application code and nodemon detect any code change and autmatically restart node.js.  
+    ![WebStorm Docker Configurations](WS-Docker-configuration.png)       
     - Dev: -v $(pwd):/emaginer-app maps the current directory in the Docker host to the emaginer-app folder in the container to avoid copying the code for each change   
     ``
     docker run --rm --name emaginer-api -it -v $(pwd):/emaginer-app -p 3000:3000 emaginer-dev-img
