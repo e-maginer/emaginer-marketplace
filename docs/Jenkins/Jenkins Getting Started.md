@@ -69,13 +69,14 @@ compiles it (install dependencies), runs unit tests, and verifies the code quali
 The build should take no more than 5 minutes.  
         1. Create the Jenkinsfile including the Commit pipeline, and push into the GitHub repository. Creating a Jenkinsfile, which is checked into source control, provides a number of benefits:  
             - In case of Jenkins failure, the pipeline definition is not lost.
-            - The hisotry of the pipeline is stored
+            - The history of the pipeline is stored
             - Code review/iteration on the pipeline
             - Single source of truth for the pipeline. 
         2. Configure Jenkins to checkout/clone the codebase from GitHub: new Item => Pipeline=> Configure => Advanced Project Options => enter the repository URL and credentials (password is the Personal Access Token).  
             - To select a specific branch rather than 'main', in the Pipeline General tab => tick the option 'This project is 
             parameterized' and add a String parameter (BRANCH) => in the Pipeline configuration, Branches to build, add 
             the new parameter name ${BRANCH}. [Checkout here](https://stackoverflow.com/questions/32108380/jenkins-how-to-build-a-specific-branch).  
+            - To select a specific folder where the Jenkinsfile is located (rather than in the project root), set the path in the field: 'Script Path' such as 'scripts/jenkins/Jenkinsfile'.  
         3. Configure the build trigger (external by Githb) and notifications in Jenkins  
         4. Push the code to the remote repository (to the feature branch (Head branch) then when merged with the main (Base branch))  
         5. CI process will be triggered by the commit pipeline by running the checkout, build, unit tests and possible code quality  
