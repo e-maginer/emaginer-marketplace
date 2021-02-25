@@ -1,0 +1,21 @@
+pipeline {
+    agent {
+        docker {
+            image 'matthewhartstonge/node-docker'
+            args '-p 3000:3000'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+    stages {
+         stage("Build") {
+            steps{
+                sh 'npm install'
+            }
+        }
+        stage('Acceptance Testing'){
+            steps{
+                echo '***** AT stage *********'
+            }
+        }
+    }
+}
