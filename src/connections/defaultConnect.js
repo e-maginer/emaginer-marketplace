@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import createError from 'http-errors';
 // start the replica set database using the command : run-rs -v 4.4.2 --shell --keep --dbpath /Users/tmuhader/Dev/mongodb-data
 (async function() {
-    const connString = process.env.MONGO_DB_URL || 'mongodb://127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019?replicaSet=rs';
+    const connString = process.env.MONGO_DB_URL || 'mongodb://127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/emaginer?replicaSet=rs';
     try {
         await mongoose.connect(connString, {
             useNewUrlParser: true,
