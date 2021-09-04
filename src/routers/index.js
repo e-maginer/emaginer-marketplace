@@ -13,7 +13,9 @@ router.get('/', function(req, res, next) {
   });
   res.render('index', { title: 'Express' });
 });
-
+//we created a router file for each resource and used them here
+// Alternatively, we can use Application-level middleware such as app.use('/users/register',usersController.validate('createUser'), usersController.createUser)
+//but using Router-level middleware is more concise and modular way (http://expressjs.com/en/guide/using-middleware.html)
 router.use('/users',userRouter);
 
 export default router;
