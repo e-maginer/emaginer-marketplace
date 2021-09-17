@@ -36,6 +36,7 @@ export default function createLogger(module) {
             new winston.transports.File({ filename: join(__dirname,'..','..','logs','EM-error.log') , level: 'error'})
         ]
     })
+    //add the console transport in case in development mode
     if(process.env.NODE_ENV === 'development'){
         logger.add(new winston.transports.Console({
             format: winston.format.combine(

@@ -29,7 +29,7 @@ export default {
   "stack": "error stacktrace",
   //this is what is returned to the consumer
   "errors": {
-    "globalMessage": "no email template configured" //in case of error message not associated with any path/parameter
+    "globalMessage": "no email template configured" //in case of error message not associated with any path/parameter like system errors "Server error occurred!"
     or
     "name": {
         "msg": "name is invalid",
@@ -105,7 +105,13 @@ export default {
             }
         }
     },
-
+    /**
+     *
+     * @param req
+     * @param res
+     * @param next
+     * @returns {Promise<void>}
+     */
     async createUser(req, res, next) {
         const session = await User.startSession();
         session.startTransaction();
@@ -131,10 +137,17 @@ export default {
                 body: JSON.stringify(loggedUser),
                 correlation: session.id
             });
+            //@todo we can use here Upsert to save the user in one query rather than calling findOne() then save(). User.updateOne({email:user.email},user,{upsert:true})
             const existingUser = await User.findOne({email: user.email});
             if (existingUser instanceof User) {
                 const error = createError(400);
                 error.errors = {
+                    //@todo looks like this error format not aligned with the validation error (see formattedValidationResult shall be aligned with this error.errors from Mongoose)
+                    //"name": {
+                    //         "msg": "name is invalid",
+                    //         "value": "",
+                    //         "param": "name"
+                    //     },
                     'email': 'The provided email is registered already.'
                 }
                 throw error;
@@ -168,16 +181,23 @@ export default {
             e.label= 'server.endpoint.post.register.userController.createUser';
             session.endSession();
             debug(`error in user controller ${e.message} `)
-            // For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass
-            // them to the next() function, where Express or your custom error handler will catch and process them
             if (!(e.errors instanceof Object))
                 e.errors = {
                     globalMessage: e.message,
                 };
+            // For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass
+            // them to the next() function, where Express or your custom error handler will catch and process them
             next(e);
         }
     },
 
+    /**
+     *
+     * @param req
+     * @param res
+     * @param next
+     * @returns {Promise<void>}
+     */
     async verifyUser(req, res, next) {
         const session = await User.startSession();
         session.startTransaction();
@@ -190,7 +210,11 @@ export default {
             }
             let filter = {_id: req.params.userID};
             const update = {updatedAt: new Date()};
-            const opts = {session};
+            /*new:true allows to to return the document as it is after the MongoDB server applied the findOneAndUpdate ( By default, findOneAndUpdate(), findOneAndDelete(), and findOneAndReplace() return the
+             document as it was before the MongoDB server applied the update.
+            built-in validator are by default verified on save() but not on the update queries. but it can if you enable
+            the runValidators option on your query.*/
+            const opts = {session, new:true, runValidators:true};
             // using findOneAndUpdate to enable a "write Lock" (by updating the updatedAt property) to avoid concurrent
             // transactions from modifying the user document after being read inside the trx
             const existingUser = await User.findOneAndUpdate(filter, update, opts);

@@ -1,4 +1,5 @@
 ## Analysis of external dependencies
+   [Markdown does not have dedicated syntax for commenting out lines. However, it is possible to emulate a comment line using a link label without an address]()
    One of the first steps in the modernization process is to discover and list all external dependencies of the legacy application.
    We need to ask ourselves questions like the following: 
    1. Does it use a database? If yes, which one? What does the connection string look like? 
@@ -50,36 +51,44 @@ The actor here is our application, which needs to be authenticated and authorize
 3. Building the application (RUN, ENV and EXPOSE)
 4. Defining the start command (ENTRYPOINT and CMD)
 5. Sharing or shipping images (tagging and pushing to registry)
-
+---
 ## Dev application execution
 1. cd  ~/Dev/WebstormProjects/Emaginer/Emaginer-marketplace (or open terminal in WS)
 2. Build the application image; execute the command  
     - Dev:  
-        ``
+        `
         docker image build -t emaginer-dev-img -f docker/DockerfileDev .
-        `` 
+        `
     - Prod:  
-        ``
+        `
         docker image build -t emaginer-prod-img -f docker/Dockerfile .
-        ``  
+        `
 
 3.Verify the image history  
-    ``
+    `
     docker image history emaginer-dev-img
-    ``
+    `
     
-4.Spawn the API container:  
+4.Spawn the API container: 
     - WebStorm: run the docker configuration as in the below screenshot to test a containerized version of the application. This
     will create/re-build an image based on the provided Dockerfile and then spawn a container off this image. The DockerfileDev is authored
-    to call the script 'npm un dev' which invokes nodemon, that is, we are having our application run in a container with a host volume containing the application code and nodemon detect any code change and autmatically restart node.js.  
+    to call the script 'npm run dev' which invokes nodemon, that is, we are having our application run in a container with a host volume containing the application code and nodemon detect any code change and autmatically restart node.js.  
     ![WebStorm Docker Configurations](WS-Docker-configuration.png)       
-    - Dev: -v $(pwd):/emaginer-app maps the current directory in the Docker host to the emaginer-app folder in the container to avoid copying the code for each change   
-    ``
+    - Dev: 
+    -v $(pwd):/emaginer-app maps the current directory in the Docker host to the emaginer-app folder in the container to avoid copying the code for each change   
+    `
     docker run --rm --name emaginer-api -it -v $(pwd):/emaginer-app -p 3000:3000 emaginer-dev-img
-    ``  
+    `
     - Prod:  
-    ``
+    `
     docker run --rm --name emaginer-prod -it -p 3000:3000 emaginer-prod-img
-    ``  
-    -- Debug using remote 
+    `
+    - Debug using remote: see https://www.jetbrains.com/help/webstorm/node-with-docker.html
+
+5.once the application has passed QA, **the image can be pushed to the Docker repository (Docker hub)**
+`
+docker image tag emaginer-prod-img:latest tmuhader/emaginer-marketplace:1.0 
+$ docker login -u tmuhader -p <my secret password>
+$ docker image push tmuhader/emaginer-marketplace:1.0
+`
 
