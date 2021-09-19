@@ -137,7 +137,7 @@ export default {
                 body: JSON.stringify(loggedUser),
                 correlation: session.id
             });
-            //@todo we can use here Upsert to save the user in one query rather than calling findOne() then save(). User.updateOne({email:user.email},user,{upsert:true})
+            //@todo we can use here Upsert to save the user in one query rather than calling findOne() then save(). User.updateOne({email:user.email},user,{upsert:true}) see page 46 in Mongo book
             const existingUser = await User.findOne({email: user.email});
             if (existingUser instanceof User) {
                 const error = createError(400);
@@ -217,6 +217,7 @@ export default {
             const opts = {session, new:true, runValidators:true};
             // using findOneAndUpdate to enable a "write Lock" (by updating the updatedAt property) to avoid concurrent
             // transactions from modifying the user document after being read inside the trx
+            //@todo we can use here Upsert to update the user in one query rather than calling findOneAndUpdate() then save(). User.updateOne({email:user.email},user,{upsert:true}) see page 46 in Mongo book
             const existingUser = await User.findOneAndUpdate(filter, update, opts);
             if (!(existingUser instanceof User))
                 throw createError(401, 'the provided user does not exist');
