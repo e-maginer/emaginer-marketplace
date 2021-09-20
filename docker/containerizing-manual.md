@@ -49,7 +49,7 @@ The actor here is our application, which needs to be authenticated and authorize
 2. Assembling the sources (WORKDIR and COPY)
 3. Building the application (RUN, ENV and EXPOSE)
 4. Defining the start command (ENTRYPOINT and CMD)
-5. Sharing or shipping images (tagging and pushing to registry)
+5. Sharing or shipping images (tiagging and pushing to regstry)
 
 ## Dev application execution
 1. cd  ~/Dev/WebstormProjects/Emaginer/Emaginer-marketplace (or open terminal in WS)
@@ -71,7 +71,7 @@ The actor here is our application, which needs to be authenticated and authorize
 4.Spawn the API container:  
     - WebStorm: run the docker configuration as in the below screenshot to test a containerized version of the application. This
     will create/re-build an image based on the provided Dockerfile and then spawn a container off this image. The DockerfileDev is authored
-    to call the script 'npm un dev' which invokes nodemon, that is, we are having our application run in a container with a host volume containing the application code and nodemon detect any code change and autmatically restart node.js.  
+    to call the script 'npm run dev' which invokes nodemon, that is, we are having our application run in a container with a host volume containing the application code and nodemon detect any code change and autmatically restart node.js.  
     ![WebStorm Docker Configurations](WS-Docker-configuration.png)       
     - Dev: -v $(pwd):/emaginer-app maps the current directory in the Docker host to the emaginer-app folder in the container to avoid copying the code for each change   
     ``
@@ -82,4 +82,18 @@ The actor here is our application, which needs to be authenticated and authorize
     docker run --rm --name emaginer-prod -it -p 3000:3000 emaginer-prod-img
     ``  
     -- Debug using remote 
+
+5. Push image to Docker registry
+push the latest version of emaginer to my account and give it a tag of 0.1
+`
+docker image tag emaginer-prod-img tmuhader/emaginer_marketplace:0.1 
+`
+Now, to be able to push the image, I have to log in to my account, as follows:
+`
+docker login -u tmuhader -p <my secret API Key>
+`
+After a successful login, I can then push the image, like this:
+`
+docker image push tmuhader/emaginer_marketplace:0.1
+`
 

@@ -18,7 +18,7 @@ docker run -it --rm --privileged --pid=host fundamentalsofdocker/nsenter
 ``  
 or by accessing the container file system:   
 ``
-docker exec -it containerID /bin/sh   
+docker exec -it containerID /bin/sh ls /var/jenkins_home  
 ``  
 2. Configure Jenkins Master:  
 	- Configuring permanent agents (Permanent, general-purpose Docker agents. ideally, in production environment, we should

@@ -7,3 +7,6 @@ EXPOSE 27018
 EXPOSE 27019
 ENTRYPOINT ["run-rs"]
 #CMD ["-v 4.4.2"," --shell", "--keep", "--dbpath /data/db"]
+# we need to use host mounted volme for
+#--dbpath /Users/tmuhader/Dev/mongodb-data
+# and option : --shell --keep
