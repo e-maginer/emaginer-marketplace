@@ -48,9 +48,10 @@ fast automated tests that run after each commit to trunk to make sure the system
 10. If the pull request has merge conflicts, or if you'd like to test the changes before merging, you can [check out the pull request locally](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/checking-out-pull-requests-locally) and merge it using the command line.
 11. [Merge the pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/merging-a-pull-request) Once your pull request has been reviewed and the branch passes your tests, you can deploy your changes to verify them in production. 
     - Anyone with push access to the repository can complete the merge **(TO BE RESTRICTED FOR THE MAIN BRANCH)**
-    - determine the best merge strategy (merge commit, squash and merge, or (rebase and merge) for the organization
-12. Run automated Acceptance testing (this is to test the integration of possibly multiple branches together) 
-    - If these automated tests fail, the team stops what they are doing to fix the problem immediately or revert the change if it can't be fixed in a few minutes. This ensures that the software in the trunck is always in a working state
+    - determine the best merge strategy (merge commit, squash and merge, or (rebase and merge) for the organization  
+12. Run automated Acceptance testing (this is to test the integration of possibly multiple branches together and integrations with 3rd party services) 
+    - The whole idea of automating the acceptance phase is to build the quality into the product instead of verifying later. The developer delivers the software with the acceptance tests that the software is what the client wanted.
+    - If these automated tests fail, the team stops what they are doing to fix the problem immediately or revert the change if it can't be fixed in a few minutes. This ensures that the software in the trunck is always in a working state  
 13. Checkout the main branch locally, Pull the merge commit (resulting from the pull request) and delete the branch
     ```
      - git checkout main
