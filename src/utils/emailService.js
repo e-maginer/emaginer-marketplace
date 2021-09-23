@@ -4,7 +4,8 @@ import createError from 'http-errors';
 const debug = debugLib('util:emailService')
 const Templates = Object.freeze({
    REGISTRATION: 1,
-   ACTIVATION: 2
+   ACTIVATION: 2,
+   RESEND_CODE:3
 })
 
 function getTemplateDefinition(template, params){
@@ -21,6 +22,12 @@ function getTemplateDefinition(template, params){
       case Templates.ACTIVATION: {
          mailOptions.subject = 'Emaginer account activated';
          mailOptions.text= `Thanks for activating your Emaginer account`;
+         break;
+      }
+      case Templates.RESEND_CODE:{
+         mailOptions.subject = 'Activation your Emaginer account';
+         mailOptions.text= `Please use your activation URL:${params.activationUrl}`;
+         mailOptions.html =`<b>Please use your activation URL:${params.activationUrl}</b>`;
          break;
       }
       default: {

@@ -1,3 +1,4 @@
+//mongoose instanceof mongoose.Mongoose; // true
 import mongoose from 'mongoose';
 import validator from 'validator';
 import '../connections/defaultConnect.js';
@@ -5,6 +6,7 @@ import debugLib from 'debug';
 import bcrypt from 'bcryptjs';
 
 const debug = debugLib('model:user');
+//see Object.freeze() in page 1112 in JS book (we can't use constant because it still allows to change the property of an object)
 const Genders = Object.freeze({
         MALE: 'male',
         FEMALE: 'female',
@@ -140,7 +142,11 @@ userSchema.post('save',function (err, doc, next){
     next(err);
 });
 
-// error handler middleware registered as post hook for user update() operation
+// @todo replace the middleware on the update function by using an array of functions in the precedent middleware (see page 66 mongoose book)
+//schema.post(['save', 'validate', 'remove'], function(res) {
+//   res === this; // true
+//   res === doc; // true
+// });
 userSchema.post('update',function (err,doc,next){
     debug(`error in the user model: ${err.errors}`);
     // if validation error, then set the error status code to 400 (bad request) and convert error messages to a more
@@ -149,15 +155,24 @@ userSchema.post('update',function (err,doc,next){
     next(err);
 })
 
-// Overwrite the toJSON() to delete sensitive user data from the response. In Mongoose, getters/setters allow you to execute
-// custom logic when getting or setting a property/path on a document.
-// Another useful feature of getters is that Mongoose applies getters when converting a document to JSON, including when
-// you call Express' res.json() or res.send() function with a Mongoose document. but here it will not be applied as
-// we have overwritten the toJSON function.
+/*
+ Overwrite the toJSON() to delete sensitive user data from the response. In Mongoose, getters/setters allow you to execute
+ custom logic when getting or setting a property/path on a document.
+ Another useful feature of getters is that Mongoose applies getters when converting a document to JSON, including when
+ you call Express' res.json() or res.send() function with a Mongoose document. but here it will not be applied as
+ we have overwritten the toJSON function.
+optionally, we can use mongoose getter : userSchema.path('password').get(v=>undefined); when we need the password to be returned,
+for authentication for example, You can also skip running getters on a one-off basis using the Document#get() function's getters option:
+user.get('password', null, { getters: false }); but A malicious user or a bug could cause an the password to be returned with this code
+*/
 userSchema.methods.toJSON = function() {
     const userObject = this.toObject();
     delete userObject.password;
     return userObject;
 }
-
+//create the User model based on the userSchema. mongoose.model(modelName,schema,collectionName) takes 3 parameters,
+// if we omit the 3rd argument, mongoose will create the collection using the modelName but in lowercase and plural
+// Note that the return value of mongoose.model() is not an instance of the Model class. Rather, mongoose.model() returns
+// a class that extends from Model. this is why here we call model() function and do not instantiate Model class using new
+//@todo use namespaced subcollection for organizing collection such as auth.users
 export default mongoose.model('User', userSchema);
