@@ -7,18 +7,17 @@ import { body } from 'express-validator';
 //@todo check difference between express.Router(); and new express.Router(); as we're supposed to create a new instance of Router() class/function (call the function as constructor) as in the nodecourse project or as a normal function
 const router = express.Router();
 
-// #route:  POST /verify-account
+// #route:  POST /register
 // #desc:   Register a new user
 // #access: Public
 //this line represents a route (routing method). It has an endpoint/path, middleware function/s and and route handler (function executed when the route is matched)
 //There is a special routing method, app.all(), which will be called in response to any HTTP method. This is used
 // for loading middleware functions at a particular path for all request methods: app.all('/secret', function(req, res, next) {..}
 router.post('/register', usersController.validate('createUser'), usersController.createUser);
-// #route:  GET /register
+// #route:  POST /verify-account
 // #desc:   activate user account
 //Route parameters are named URL segments that are used to capture the values specified at their position in the URL.
-// The captured values are populated in the req.params object (req.params.userID), with the name of the route parameter specified in the path
-// as their respective keys.
+// The captured values are populated in the req.params object (req.params.userID), with the name of the route parameter specified in the path as their respective keys.
 //Route path: /users/:userId/books/:bookId
 // Request URL: http://localhost:3000/users/34/books/8989
 // req.params: { "userId": "34", "bookId": "8989" }\
@@ -34,6 +33,13 @@ router.post('/register', usersController.validate('createUser'), usersController
 // // the URLs should be kept clean, logical and readable
 // #access: Public
 router.post('/verify-account/:userID/:code', usersController.validate('verifyUser'), usersController.verifyUser);
+/**
+ #route:  GET /resend-code
+ #desc:   Register a new activation email
+ #access: Public
+ */
+router.get('/resend-code/:email', usersController.validate('resendCode'), usersController.resendCode);
+
 router.get('/error', (req, res) => {
     throw createError(500, 'error in entered data');
 })

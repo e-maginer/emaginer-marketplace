@@ -92,3 +92,17 @@ $ docker login -u tmuhader -p <my secret password>
 $ docker image push tmuhader/emaginer-marketplace:1.0
 `
 
+5. Push image to Docker registry
+push the latest version of emaginer to my account and give it a tag of 0.1
+`
+docker image tag emaginer-prod-img tmuhader/emaginer_marketplace:0.1 
+`
+Now, to be able to push the image, I have to log in to my account, as follows:
+`
+docker login -u tmuhader -p <my secret API Key>
+`
+After a successful login, I can then push the image, like this:
+`
+docker image push tmuhader/emaginer_marketplace:0.1
+`
+

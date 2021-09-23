@@ -1,0 +1,12 @@
+# we need to use a node image as a base since we are using npm commands
+FROM node:15-stretch
+RUN npm install run-rs -g
+WORKDIR /data/db
+EXPOSE 27017
+EXPOSE 27018
+EXPOSE 27019
+ENTRYPOINT ["run-rs"]
+#CMD ["-v 4.4.2"," --shell", "--keep", "--dbpath /data/db"]
+# we need to use host mounted volme for
+#--dbpath /Users/tmuhader/Dev/mongodb-data
+# and option : --shell --keep
