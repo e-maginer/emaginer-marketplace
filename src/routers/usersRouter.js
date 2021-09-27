@@ -3,6 +3,7 @@ import createError from 'http-errors';
 // const require = createRequire(import.meta.url);
 import express from 'express';
 import usersController from '../controllers/usersController.js';
+import validate from '../middlewares/userValidation.js';
 import { body } from 'express-validator';
 //@todo check difference between express.Router(); and new express.Router(); as we're supposed to create a new instance of Router() class/function (call the function as constructor) as in the nodecourse project or as a normal function
 const router = express.Router();
@@ -13,7 +14,10 @@ const router = express.Router();
 //this line represents a route (routing method). It has an endpoint/path, middleware function/s and and route handler (function executed when the route is matched)
 //There is a special routing method, app.all(), which will be called in response to any HTTP method. This is used
 // for loading middleware functions at a particular path for all request methods: app.all('/secret', function(req, res, next) {..}
-router.post('/register', usersController.validate('createUser'), usersController.createUser);
+// the validate middleware does not follow the Express middleware signature (req,res,next) because it returns an array of validators (Validation Chain) to the routing method
+// that will be inserted in the route method call and those validators wil call next(). the validate method here is actually called to return the actual middlewares
+// and not registered to be called in async mode
+router.post('/register', validate('createUser'), usersController.createUser);
 // #route:  POST /verify-account
 // #desc:   activate user account
 //Route parameters are named URL segments that are used to capture the values specified at their position in the URL.
@@ -31,18 +35,18 @@ router.post('/register', usersController.validate('createUser'), usersController
 // //Express allows you to construct your URLs any way you like — you can encode information in the body of the URL as above (/users/:id)
 // // or use URL GET parameters (e.g. /book/?id=6) which can be fetched using request.query.paramname. Whichever approach you use,
 // // the URLs should be kept clean, logical and readable
+
 // #access: Public
-router.post('/verify-account/:userID/:code', usersController.validate('verifyUser'), usersController.verifyUser);
+router.post('/verify-account/:userID/:code', validate('verifyUser'), usersController.verifyUser);
 /**
  #route:  GET /resend-code
  #desc:   Register a new activation email
  #access: Public
  */
-router.get('/resend-code/:email', usersController.validate('resendCode'), usersController.resendCode);
+router.get('/resend-code/:email', validate('resendCode'), usersController.resendCode);
 
 router.get('/error', (req, res) => {
     throw createError(500, 'error in entered data');
 })
-
 
 export default router;
