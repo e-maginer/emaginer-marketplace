@@ -5,7 +5,8 @@ const debug = debugLib('util:emailService')
 const Templates = Object.freeze({
    REGISTRATION: 1,
    ACTIVATION: 2,
-   RESEND_CODE:3
+   RESEND_CODE:3,
+   FORGOT_PASSWORD:4
 })
 
 function getTemplateDefinition(template, params){
@@ -28,6 +29,12 @@ function getTemplateDefinition(template, params){
          mailOptions.subject = 'Activation your Emaginer account';
          mailOptions.text= `Please use your activation URL:${params.activationUrl}`;
          mailOptions.html =`<b>Please use your activation URL:${params.activationUrl}</b>`;
+         break;
+      }
+      case Templates.FORGOT_PASSWORD: {
+         mailOptions.subject = 'Reset your Emaginer account Password';
+         mailOptions.text= `Please use the rest password URL:${params.resetUrl}`;
+         mailOptions.html =`<b>Please use use the rest password  URL:${params.resetUrl}</b>`;
          break;
       }
       default: {

@@ -77,31 +77,24 @@ The actor here is our application, which needs to be authenticated and authorize
     - Dev: 
     -v $(pwd):/emaginer-app maps the current directory in the Docker host to the emaginer-app folder in the container to avoid copying the code for each change   
     `
-    docker run --rm --name emaginer-api -it -v $(pwd):/emaginer-app -p 3000:3000 emaginer-dev-img
-    `
+    docker run --rm --name emaginer-api -it -v $(pwd):/emaginer-app -p 3000:3000 --memory 2000MB emaginer-dev-img
+    `  
     - Prod:  
     `
-    docker run --rm --name emaginer-prod -it -p 3000:3000 emaginer-prod-img
-    `
-    - Debug using remote: see https://www.jetbrains.com/help/webstorm/node-with-docker.html
-
-5.once the application has passed QA, **the image can be pushed to the Docker repository (Docker hub)**
-`
-docker image tag emaginer-prod-img:latest tmuhader/emaginer-marketplace:1.0 
-$ docker login -u tmuhader -p <my secret password>
-$ docker image push tmuhader/emaginer-marketplace:1.0
-`
-
-5. Push image to Docker registry
-push the latest version of emaginer to my account and give it a tag of 0.1
+    docker run --rm --name emaginer-prod -it -p 3000:3000 --memory 2000MB emaginer-prod-img
+    `  
+    - Debug using remote: see https://www.jetbrains.com/help/webstorm/node-with-docker.html  
+  
+5. Once the application has passed QA, **the image can be pushed to the Docker repository (Docker hub)**
+push the latest version of emaginer to my account and give it a tag of 0.1  
 `
 docker image tag emaginer-prod-img tmuhader/emaginer_marketplace:0.1 
-`
-Now, to be able to push the image, I have to log in to my account, as follows:
-`
+`  
+Now, to be able to push the image, I have to log in to my account, as follows:  
+`  
 docker login -u tmuhader -p <my secret API Key>
-`
-After a successful login, I can then push the image, like this:
+`  
+After a successful login, I can then push the image, like this:  
 `
 docker image push tmuhader/emaginer_marketplace:0.1
 `

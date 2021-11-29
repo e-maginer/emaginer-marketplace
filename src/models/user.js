@@ -17,6 +17,11 @@ const Genders = Object.freeze({
         ACTIVE: 'ACTIVE',
         SUSPENDED: 'SUSPENDED',
         DEACTIVE: 'DEACTIVE'
+    }),
+    Roles= Object.freeze({
+        ADMIN:'ADMIN',
+        CONSUMER:'CONSUMER',
+        SELLER:'SELLER'
     });
 
 const userSchema  = new mongoose.Schema({
@@ -67,11 +72,23 @@ const userSchema  = new mongoose.Schema({
         enum: Object.values(Statuses),
         default: Statuses.NOT_INITIALIZED
     },
+    passwordChangedAt: {
+        type: Date,
+        required: false
+    },
+    role:{
+        type: String,
+        required: true,
+        uppercase:true,
+        enum:Object.values(Roles),
+        default: Roles.CONSUMER
+    }
+
 },{
     timestamps: true
 });
 // copy the literal object containing constant variables into the user model statics
-Object.assign(userSchema.statics,{Genders,Statuses});
+Object.assign(userSchema.statics,{Genders,Statuses,Roles});
 
 /**
  * this function format the validation error returned by Mongoose as per Emaginer error format
@@ -170,6 +187,22 @@ userSchema.methods.toJSON = function() {
     delete userObject.password;
     return userObject;
 }
+
+userSchema.statics.validatePassword = async function(candidatePWD, userPWD) {
+     return await bcrypt.compare(candidatePWD,userPWD);
+}
+/**
+ * check if the user changed his password after a token was issued to prevent access to protected resources before re-logging in
+ * @param JWTTimestamp
+ */
+userSchema.methods.isChangedPWDAfter = function(JWTTimestamp){
+    if(this.passwordChangedAt instanceof Date){
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime()/1000,10);
+        return JWTTimestamp<changedTimestamp;
+    }
+    return false;
+}
+
 //create the User model based on the userSchema. mongoose.model(modelName,schema,collectionName) takes 3 parameters,
 // if we omit the 3rd argument, mongoose will create the collection using the modelName but in lowercase and plural
 // Note that the return value of mongoose.model() is not an instance of the Model class. Rather, mongoose.model() returns

@@ -6,7 +6,7 @@ https://hub.docker.com/r/matthewhartstonge/node-docker
 this image is used for the Docker agent for all the pipeline stages.  it must contain:
     a)NodeJS to execute npm install command (from Build stage)
     b)Docker CLI to execute Docker commands (from Build image & push it to DockerHub)
-the Jenkins agent container is running inside the Jenkins master container so we are running Docker inside a Docker
+the build container is running inside the Jenkins master container so we are running Docker inside a Docker
 4)Build stage: call "npm install" to make sure all external dependencies of our app can be installed based on the package.json file fetched from GitHub.
 5)Testing (unit/integration): run "npm test" (to be done)
 6)Now that we have successfully built and unit-tested our application, we can configure our pipeline to build a Docker

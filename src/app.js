@@ -73,10 +73,11 @@ app.use(function(err, req, res, next) {
   if(res.headersSent) {
     next(err);
   }
-  // If the error did not originate from createError, it will not have a status property. So set the status code to 500 Internal Server Error
+  // If the error did not originate from createError, it will not have a status property. So set the HTTP res status code to 500 Internal Server Error
   //res.status(err.status||500).send({message:err.message});
-  res.status(err.status||500);
-  if(err.status >= 500) {
+  const status = err.status||500;
+  res.status(status);
+  if(status >= 500) {
     const logger = createLogger(err.label);
     logger.error({
       statusCode: err.status,

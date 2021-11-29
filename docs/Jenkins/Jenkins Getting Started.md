@@ -8,16 +8,17 @@
     - Orchestrate the job executions on agents  
 1. Start Jenkins Master  
 Run/start the Jenkins container (remove --rm to persist the container)  
- `docker run --rm -d --name jenkins_blueocean -u root -p 8080:8080 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v "$HOME":/home jenkinsci/blueocean
+ `docker run --rm -d --name jenkins_blueocean -u root -p 8080:8080 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v "$HOME":/home --memory 4000M jenkinsci/blueocean
  `  
- the Java Web Start agent uses port 50000 for communication with Jenkins Master, therefore, since we're using the Docker-based Jenkins master,
+ N.B the Java Web Start agent uses port 50000 for communication with Jenkins Master, therefore, since we're using the Docker-based Jenkins master,
  we need to publish that port (-p 50000:50000)  
- Otherwise, if the container already exist in the local machine, start the Jenkins container:  
+ 
+Otherwise, if the container already exist in the local machine, start the Jenkins container:  
  `
  docker start jenkins_blueocean
  `  
  **_note:_** this is the jenkins_blueocean release, for the old release we should mount a different volume (jenkins_home:/var/jenkins_home). 
-We can access the volume mounted to the container (jenkins-data), which is actually a folder in the HyperKit VM that Docker desktop uses to run containers, to see  Jenkins files for example
+We can access the content of the volume mounted to the container (jenkins-data), which is actually a folder in the HyperKit VM that Docker desktop uses to run containers, to see  Jenkins files for example
  by running a privileged container which allows to access that hidden VM from our macOS, from the fundamentalsofdocker/nsenter image.  
 ``
 docker run -it --rm --privileged --pid=host fundamentalsofdocker/nsenter
@@ -88,14 +89,19 @@ The most basic Continuous Integration process is called a Commit pipeline.
 The CI phase provides the first feedback to developers. As its name indicates, starts by checking out the code from the repository, 
 compiles it (install dependencies), runs unit tests, and verifies the code quality. 
 The build should take no more than 5 minutes.  
-        1. Create the Jenkinsfile including the Commit pipeline, and push into the GitHub repository. Creating a Jenkinsfile, which is checked into source control, provides a number of benefits:  
-            - In case of Jenkins failure, the pipeline definition is not lost.
-            - The history of the pipeline is stored
-            - Code review/iteration on the pipeline
-            - Single source of truth for the pipeline. 
+        1. Create the Jenkinsfile including the Commit pipeline, and push into the GitHub repository. All stages will run on dynamically provisioned Docker containers, 
+        having matthewhartstonge/node-docker image, on permanent/pre-configured agent nodes. We are using this image:[matthewhartstonge](https://hub.docker.com/r/matthewhartstonge/node-docker)
+        that contains:  
+            - NodeJS to execute npm install command (from Build stage)  
+            - Docker CLI to execute Docker commands (from Build image & push it to DockerHub)  
+        Alternatively, we can create our image from a Dockerfile (based on Node and we add Docker CLI) and push it to Docker registry (see the example builder-container_2_6 in the dockerBook project) 
+        Creating a Jenkinsfile, which is checked into source control, provides a number of benefits:  
+            - In case of Jenkins failure, the pipeline definition is not lost.  
+            - The history of the pipeline is stored  
+            - Code review/iteration on the pipeline  
+            - Single source of truth for the pipeline.   
         2. Configure Jenkins to checkout/clone the codebase from GitHub: new Item => Pipeline=> Configure => Advanced Project Options => enter the repository URL and credentials (password is the Personal Access Token).  
-            - To select a specific branch rather than 'main', in the Pipeline General tab => tick the option 'This project is 
-            parameterized' and add a String parameter (BRANCH) => in the Pipeline configuration, Branches to build, add 
+            - To select a specific branch rather than 'main', in the Pipeline General tab => tick the option 'This project is parameterized' and add a String parameter (BRANCH) => in the Pipeline configuration, Branches to build, add 
             the new parameter name ${BRANCH}. [Checkout here](https://stackoverflow.com/questions/32108380/jenkins-how-to-build-a-specific-branch).  
             - To select a specific folder where the Jenkinsfile is located (rather than in the project root), set the path in the field: 'Script Path' such as 'scripts/jenkins/Jenkinsfile'.  
         3. Configure the build trigger (external by Githb) and notifications in Jenkins  

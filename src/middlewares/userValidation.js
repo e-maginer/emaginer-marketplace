@@ -89,11 +89,44 @@ const validate =  (method) => {
 
         case 'resendCode': {
             return [
-                param('email')
+                param('userName')
                     .exists()
-                    .withMessage('Please enter your email')
-                    .isEmail()
-                    .normalizeEmail()
+                    .withMessage('Please enter your userName')
+            ]
+        }
+
+        case 'login': {
+            return [
+                body('userName')
+                    .exists()
+                    .withMessage('Please enter your username')
+                    .escape(),
+                body('password')
+                    .exists()
+                    .withMessage('please enter your password')
+            ]
+        }
+        case 'delete':{
+            return[
+                param('userID', 'Invalid URL')
+                    .exists()
+                    .isMongoId(),
+            ]
+        }
+        case 'forgotPassword': {
+            return [
+                body('userName')
+                    .exists()
+                    .withMessage('Please enter your username')
+                    .trim()
+                    .isLength({min:2,max:100})
+                    .escape()
+            ]
+        }
+        case 'resetPassword': {
+            return[
+                param('code','Invalid URL')
+                    .exists()
             ]
         }
     }

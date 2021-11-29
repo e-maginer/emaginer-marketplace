@@ -5,18 +5,20 @@ import express from 'express';
 import usersController from '../controllers/usersController.js';
 import validate from '../middlewares/userValidation.js';
 import { body } from 'express-validator';
+import * as authController from "../controllers/authController.js";
+import User from '../models/user.js'
 //@todo check difference between express.Router(); and new express.Router(); as we're supposed to create a new instance of Router() class/function (call the function as constructor) as in the nodecourse project or as a normal function
 const router = express.Router();
 
 // #route:  POST /register
 // #desc:   Register a new user
 // #access: Public
-//this line represents a route (routing method). It has an endpoint/path, middleware function/s and and route handler (function executed when the route is matched)
+//this line represents a route (routing method). It has an endpoint/path, middleware function/s  and route handler (function executed when the route is matched)
 //There is a special routing method, app.all(), which will be called in response to any HTTP method. This is used
 // for loading middleware functions at a particular path for all request methods: app.all('/secret', function(req, res, next) {..}
-// the validate middleware does not follow the Express middleware signature (req,res,next) because it returns an array of validators (Validation Chain) to the routing method
-// that will be inserted in the route method call and those validators wil call next(). the validate method here is actually called to return the actual middlewares
-// and not registered to be called in async mode
+// the validate middleware does not follow the Express middleware signature (req,res,next) because it returns an array of validators (Validation Chain) to the routing method.
+// that will be inserted in the route method call and those validators wil call next(). the validate method here is actually called to return the actual middlewares.
+// and not registered to be called in async mode. Likewise the middleware authController.authorize return a middleware function.
 router.post('/register', validate('createUser'), usersController.createUser);
 // #route:  POST /verify-account
 // #desc:   activate user account
@@ -43,7 +45,16 @@ router.post('/verify-account/:userID/:code', validate('verifyUser'), usersContro
  #desc:   Register a new activation email
  #access: Public
  */
-router.get('/resend-code/:email', validate('resendCode'), usersController.resendCode);
+router.get('/resend-code/:userName', validate('resendCode'), usersController.resendCode);
+
+router.post('/login', validate('login'), authController.login);
+
+router.get('/:id', authController.validateToken, usersController.getMyProfile);
+
+router.post('/forgot-password', validate('forgotPassword'), usersController.forgotPassword);
+router.patch('/reset-password/:code',validate('resetPassword',usersController.resetPassword()));
+
+router.delete('/:id', authController.validateToken, authController.authorize(User.Roles.ADMIN), validate('delete'), usersController.deleteUser);
 
 router.get('/error', (req, res) => {
     throw createError(500, 'error in entered data');
