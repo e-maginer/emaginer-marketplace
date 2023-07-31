@@ -33,7 +33,12 @@ docker exec -it containerID /bin/sh -c "ls /var/jenkins_home"
  configure a dynamic, general-purpose Docker agents using Cloud feature). 
         - In the admin console=> Manager Jenkins => Manage Nodes and Clouds => New Node => 
         - Remote root directory: /tmp/jenkins-agent1, 
-        - Launch agent by connecting it to the master.  
+        - Launch agent by connecting it to the master.
+            - access the jar file in the agent folder /tmp/download/agent.jar
+            - run the command:   
+            `
+            java -jar agent.jar -jnlpUrl http://localhost:8080/computer/agent1/slave-agent.jnlp -secret de3cdd24c5305bec49fd163c87331625030ad49ddeedbb365f6a986d04bb729c -workDir "/tmp/jenkins-agent1"
+            `
         
  **Permanent, general-purpose Docker agents**  
  
@@ -41,13 +46,15 @@ docker exec -it containerID /bin/sh -c "ls /var/jenkins_home"
  We define the Docker image that will be run by the Jenkins agent in the pipeline project (i.e. each project can have
  different image depending upon the project but all can be run on any of the permanent agents). 
 
-   2. When the build is started, the Jenkins agent starts a container from the Docker image specified in the pipeline, it must contain:  
+   2. When the build is started, the Jenkins master checkout the specified git repository to read the Jenkinsfile indicated in the pipeline configuration (to figure out where to run the build) 
+   3. the Jenkins master reads the Jenkinsfile, starts a build container, in one of the permanent Jenkins agent machine, from the Docker image specified in the pipeline, it must contain:  
     - NodeJS to execute npm install command (from Build stage)   
     - Docker CLI to execute Docker commands (from Build image & push it to DockerHub stage, so here Docker container running Docker commands).   
     We are using the image "matthewhartstonge/node-docker", alternatively, we can create
  our image from a Dockerfile (based on Node and we add Docker CLI) and push it to Docker registry (see the example builder-container_2_6 in the dockerBook project)  
  
-   3. The Jenkins agent then executes all the pipeline steps inside that container (the Jenkins agent itself is not running in a container
+   4. The agent checkout the changes from the remote repository
+   5. The Jenkins agent then executes all the pipeline steps inside that container (the Jenkins agent itself is not running in a container
   but it will spawn a container to execute the build)    
   ![Permanent, general-purpose Docker agents](permanent-docker-agent.vpd.jpg) 
    
@@ -106,10 +113,26 @@ The build should take no more than 5 minutes.
             - To select a specific folder where the Jenkinsfile is located (rather than in the project root), set the path in the field: 'Script Path' such as 'scripts/jenkins/Jenkinsfile'.  
         3. Configure the build trigger (external by Githb) and notifications in Jenkins  
         4. Push the code to the remote repository (to the feature branch (Head branch) then when merged with the main (Base branch))  
-        5. CI process will be triggered by the commit pipeline by running the checkout, build, unit tests and possible code quality  
+        5. CI process will be triggered by the commit pipeline by running the checkout, build, unit tests and possible code quality (API documentation for humans including the list of available methods and their details can be easily generated from the API description file. Done as a step in the build process, this easily prevents out-of-sync docs). 
+        The test here is to make sure that a single service (different from integration testing executed in Automated Acceptance stage) is working properly, so the test is not performed in a containerized app yet (the built is still executed in a conainter though).  
+        6. Once the service has passed unit testing and code quality, we build its image and **the image can be pushed to the Docker repository (Docker hub)**
+           push the latest version of emaginer API service to my account and give it a tag of 0.1. This image will be used in the Automated Acceptance stage to spawn a container
+           for integration testing with the DB container and other external services. 
+           `
+           docker image tag emaginer-prod-img tmuhader/emaginer_marketplace:0.1 
+           `  
+           Now, to be able to push the image, I have to log in to my account, as follows:  
+           `  
+           docker login -u tmuhader -p <my secret API Key>
+           `  
+           After a successful login, I can then push the image, like this:  
+           `
+           docker image push tmuhader/emaginer_marketplace:0.1
+           `
+
 ### Automated Acceptance
 This checks if the customer's requirements are met by the developers implementing the features. The whole idea of automating the acceptance phase is to build the quality into the product instead 
-of verifying it later. In other words, when a developer completes the implementation, the software is already delviered together with acceptance tests that verify that the software is what customer wanted.
+of verifying it later. In other words, when a developer completes the implementation, the software is already delviered together with acceptance tests that verify that the software is what customer wanted.  
 
 ### Configuration Management  
 This replaces the manual operations phases; it configures the environment and deploys the software. It involves taking care of preparing and installing the necessary tools, scaling the number of service

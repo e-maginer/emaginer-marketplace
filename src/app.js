@@ -49,7 +49,7 @@ app.use(express.static(join(__dirname, 'public')));
 app.use('/', indexRouter);
 
 
-// Handling 404 errors (no route matching)
+// Handling 404 errors (no route matching) and forward to error handler
 // When you pass an argument to next(), Express will assume that this was an error and it will skip all other routes
 // and send whatever was passed to next() to the error handling middleware that was defined
 app.use(function(req, res, next){
@@ -64,7 +64,7 @@ app.use(function(err, req, res, next) {
   /*
   If you pass an error to next() and you do not handle it in an error handler, it will be handled by the built-in error handler; the error will be written to the client
   with the stack trace.
-  Note: The stack trace is not included in the production environment. To run it in production mode you need to set the environment variable NODE_ENV to 'production'.
+  Note: The stack trace is not included in the production environment. To run the application in production mode you need to set the environment variable NODE_ENV to 'production'.
 
   If you call next() with an error after you have started writing the response (for example, if you encounter an error while streaming
   the response to the client) the Express default error handler closes the connection and fails the request. So when you add a custom

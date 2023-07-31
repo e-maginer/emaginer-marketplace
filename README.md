@@ -60,6 +60,15 @@ on only one remote, Git will create a tracking branch for you uisng the shortcut
      - git branch -d express-validator
     ```
 14. [Tidy up your branches](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/deleting-and-restoring-branches-in-a-pull-request) using the delete button in the pull request or on the branches page.
-    - delete the remote-tracking branch locally by typing git fetch -p 
+    - delete the remote-tracking branch locally by typing git fetch -p
 
 
+## Mongo DB Atlas setup
+1. Create a new cluster
+2. **Add your current IP address to the allowed access list in the "Network Access" menu item on the left menu** 
+3. Use the connection string to connect while using the Atlas user password
+
+## Run the application
+1. open the terminal from Emaginer-marketplace and run the appropriate npm command (e.g. npm run dev)
+2. open Postman and send the "create user" API endpoint 
+3. check in MongoDB Compass that the user has created in the DB 

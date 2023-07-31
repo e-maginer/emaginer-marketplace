@@ -8,11 +8,16 @@
     "_comments2": "type: 'nodemon' and it will look for the start script to launch the application",
     "start": "env-cmd -f ./config/prod.env node src/bin/www.js",
     "dev": "env-cmd -f ./config/dev.env nodemon src/bin/www.js",
-    "_comment3": "setting the DEBUG env variable. we can turn it on by setting an environment variable just for one process when we launch it (shell command below):",
+    "_comment3": "this is a Morgan debug command. setting the DEBUG env variable. we can turn it on by setting an environment variable just for one process when we launch it (shell command below):",
     "debug": "DEBUG=model:*,controller:user npm run dev",
     "_comment4": "ProdDb is using MongoDb Atlas",
-    "prodDB": "env-cmd -f ./config/prod.env nodemon src/bin/www.js"
+    "prodDB": "env-cmd -f ./config/prod.env nodemon src/bin/www.js",
+    "test": "env-cmd -f ./config/test.env node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "transform": {},
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cookie-parser": "1.4.4",
@@ -37,6 +42,8 @@
     ]
   },
   "devDependencies": {
-    "env-cmd": "^10.1.0"
+    "env-cmd": "^10.1.0",
+    "jest": "^27.4.3",
+    "supertest": "^6.2.1"
   }
 }

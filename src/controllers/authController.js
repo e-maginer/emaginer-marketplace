@@ -29,6 +29,12 @@ const debug = debugLib('controller:auth');
                 body:JSON.stringify({userName, password}),
                 correlation: session.id
             })
+            /*
+            Sometimes you want to omit certain felds from a query result. MongoDB supports projections, which let you select which fields to include or exclude from the result documents.
+            Mongoose queries have a select() function that let you add a projection to your query. A projection is either inclusive or exclusive. That means either all the values in the object must be truthy, or they must all be falsy
+            You can define default projections on your schema.For example, you may want to exclude a user's email from query results by default. If you want to include email without excluding all other fields, use .select('+email').
+            (Mongoose 53)
+             */
             const user = await User.findOne({userName}).select('+password');
             if(!(user instanceof User) || !(await User.validatePassword(password,user.password)) ) {
                 throw createError(401,'User or Password is incorrect');
