@@ -6,7 +6,8 @@ const Templates = Object.freeze({
    REGISTRATION: 1,
    ACTIVATION: 2,
    RESEND_CODE:3,
-   FORGOT_PASSWORD:4
+   FORGOT_PASSWORD:4,
+   RESET_PASSWORD:5
 })
 
 function getTemplateDefinition(template, params){
@@ -33,8 +34,14 @@ function getTemplateDefinition(template, params){
       }
       case Templates.FORGOT_PASSWORD: {
          mailOptions.subject = 'Reset your Emaginer account Password';
-         mailOptions.text= `Please use the rest password URL:${params.resetUrl}`;
+         mailOptions.text= `Please use the rest password URL:${params.resetUrl} to submit a PATCH request including your new password and password confirmation`;
          mailOptions.html =`<b>Please use use the rest password  URL:${params.resetUrl}</b>`;
+         break;
+      }
+      case Templates.RESET_PASSWORD: {
+         mailOptions.subject = 'New Emaginer account Password';
+         mailOptions.text= `Your account password has been reset successfully`;
+         mailOptions.html =`<b>Your account password has been reset successfully</b>`;
          break;
       }
       default: {

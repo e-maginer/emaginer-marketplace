@@ -41,6 +41,7 @@ const userSchema  = new mongoose.Schema({
         trim: true,
         unique: true,
         lowercase: true,
+        //we can use a function instead of the literal object validate: function(value). see page 60 in Mongoose book
         validate: {
             // Validators always receive the value to validate as their first argument and must return Boolean.
             // Returning false or throwing an error means validation failed. https://mongoosejs.com/docs/api.html#schematype_SchemaType-validate
@@ -177,7 +178,7 @@ userSchema.post('update',function (err,doc,next){
  custom logic when getting or setting a property/path on a document.
  Another useful feature of getters is that Mongoose applies getters when converting a document to JSON, including when
  you call Express' res.json() or res.send() function with a Mongoose document. but here it will not be applied as
- we have overwritten the toJSON function.
+ we have overwritten the toJSON function. @todo we need to check if this is not impacting the possibility of configuring the toJSON schema option that we can add as 2nd parameter to the schema definition to configure Virtuals for example (see page 22 in Mongoose book)
 optionally, we can use mongoose getter : userSchema.path('password').get(v=>undefined); when we need the password to be returned,
 for authentication for example, You can also skip running getters on a one-off basis using the Document#get() function's getters option:
 user.get('password', null, { getters: false }); but A malicious user or a bug could cause an the password to be returned with this code

@@ -4,11 +4,11 @@ import debugLib from 'debug';
 import SecretCode from '../models/secretCode.js';
 import emailService from "../utils/emailService.js";
 import {requestValidationResult} from "./controllerHelpers.js";
-import {body, param } from "express-validator";
+import {body, param} from "express-validator";
 import createLogger from "../utils/logger.js";
 //todo replace debug with Winston debug commands
 const debug = debugLib('controller:user');
-import {signToken,createOTP, hashOTP} from '../utils/tokenService.js'
+import {signToken, createOTP, hashOTP} from '../utils/tokenService.js'
 
 
 // export an anonymous object literal exposing all the controller API functions. This instance is cached by ES module system
@@ -28,6 +28,7 @@ export default {
         const session = await User.startSession();
         session.startTransaction();
         try {
+            //@todo try remove the requestValidationResult from the Controller and move its code to the validate() in userValidation() as an additional member of the array after the validation check out here: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/forms/Create_genre_form#controller%E2%80%94post_route
             requestValidationResult(req);
             //manually retrieving the relevant parameters sent by the user to avoid allowing the user to manipulate auto-computed parameters like status and role
             const user = new User({
@@ -37,8 +38,8 @@ export default {
                 password: req.body.password,
                 gender: req.body.gender,
                 dob: req.body.dob,
-                passwordChangedAt:req.body.passwordChangedAt,
-                role:req.body.role
+                passwordChangedAt: req.body.passwordChangedAt,
+                role: req.body.role
             });
             // logging the request params
             // To use delete on a Mongoose path (password), you would need to convert the model document into a plain JavaScript object
@@ -52,7 +53,7 @@ export default {
                 body: JSON.stringify(loggedUser),
                 correlation: session.id
             });
-            //@todo we can use here Upsert to save the user in one query rather than calling findOne() then save(). User.updateOne({email:user.email},user,{upsert:true}) see page 46 in Mongo book
+            //@todo this logic does not prevent simualtaneous creation of the same user with Email. we can use here Upsert to save the user in one query rather than calling findOne() then save(). User.updateOne({email:user.email},user,{upsert:true}) see page 46 in Mongo book
             const existingUser = await User.findOne({email: user.email});
             if (existingUser instanceof User) {
                 const error = createError(400);
@@ -67,7 +68,7 @@ export default {
                 }
                 throw error;
             }
-            let savedUser = await user.save({ session });
+            let savedUser = await user.save({session});
             //${req.protocol}://${req.hostname}${req.originalUrl}
             const baseUrl = `${req.protocol}://${req.get('host')}`;
             const OTPObject = createOTP(parseInt(process.env.USER_OTP_LENGTH));
@@ -76,9 +77,9 @@ export default {
             // To get/set the session associated with a given document, use doc.$session().
             activationCode.$session(session);
             await activationCode.save();*/
-            await SecretCode.create([{email: savedUser.email, code:OTPObject.encryptedOTP}], {session});
+            await SecretCode.create([{email: savedUser.email, code: OTPObject.encryptedOTP}], {session});
+          //  await emailService.sendEmail(savedUser.email, emailService.templates.REGISTRATION, {activationUrl: url});
             await session.commitTransaction();
-            await emailService.sendEmail(savedUser.email, emailService.templates.REGISTRATION, {activationUrl: url});
             const token = await signToken({id: savedUser._id});
             logger.info({
                 message: 'closing createUser()',
@@ -92,9 +93,9 @@ export default {
         } catch (e) {
             await session.abortTransaction();
             // add the session ID to the error so it can be logged
-            e.correlation= session.id;
+            e.correlation = session.id;
             // passing the label to be logged by the app.js module when creating the logger
-            e.label= 'server.endpoint.post.register.userController.createUser';
+            e.label = 'server.endpoint.post.register.userController.createUser';
             debug(`error in user controller ${e.message} `)
             if (!(e.errors instanceof Object))
                 e.errors = {
@@ -103,7 +104,7 @@ export default {
             // For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass
             // them to the next() function, where Express or your custom error handler will catch and process them
             next(e);
-        }finally {
+        } finally {
             session.endSession();
         }
     },
@@ -122,11 +123,11 @@ export default {
             requestValidationResult(req);
             let filter = {_id: req.params.userID};
             const update = {updatedAt: new Date()};
-            /*new:true allows to to return the document as it is after the MongoDB server applied the findOneAndUpdate ( By default, findOneAndUpdate(), findOneAndDelete(), and findOneAndReplace() return the
-             document as it was before the MongoDB server applied the update.
+            /*new:true allows to return the document as it is after the MongoDB server applied the findOneAndUpdate ( By default, findOneAndUpdate(),
+            findOneAndDelete(), and findOneAndReplace() return the document as it was before the MongoDB server applied the update.
             built-in validator are by default verified on save() but not on the update queries. but it can if you enable
             the runValidators option on your query.*/
-            const opts = {session, new:true, runValidators:true};
+            const opts = {session, new: true, runValidators: true};
             // using findOneAndUpdate to enable a "write Lock" (by updating the updatedAt property) to avoid concurrent
             // transactions from modifying the user document after being read inside the trx
             //@todo we can use here Upsert to update the user in one query rather than calling findOneAndUpdate() then save(). User.updateOne({email:user.email},user,{upsert:true}) see page 46 in Mongo book
@@ -164,7 +165,7 @@ export default {
             // send confirmation email
             await emailService.sendEmail(existingUser.email, emailService.templates.ACTIVATION);
             await session.commitTransaction();
-           // logging end function
+            // logging end function
             logger.info({
                 message: 'closing verifyUser()',
                 remoteAddress: req.connection.remoteAddress,
@@ -174,8 +175,8 @@ export default {
         } catch (e) {
             await session.abortTransaction();
             // add the session ID to the error so it can be logged
-            e.correlation= session.id;
-            e.label= 'server.endpoint.post.verify-account.userController.verifyUser';
+            e.correlation = session.id;
+            e.label = 'server.endpoint.post.verify-account.userController.verifyUser';
             debug(`error in user controller ${e.message} `)
             // For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass
             // them to the next() function, where Express or your custom error handler will catch and process them
@@ -184,51 +185,51 @@ export default {
                     globalMessage: e.message,
                 };
             next(e);
-        }finally {
+        } finally {
             session.endSession();
         }
 
     },
 
     async resendCode(req, res, next) {
-      try{
-          requestValidationResult(req);
-          const {userName} = req.params;
-          const logger = createLogger('server.endpoint.get.resend-code.userController.resendCode')
-          logger.info({
-              message: 'enter resendCode()',
-              remoteAddress: req.connection.remoteAddress,
-              body: JSON.stringify(userName)
-          })
-          const filter = {
-              userName,
-              status:User.Statuses.NOT_INITIALIZED
-          }
-          const existingUser = await User.findOne(filter);
-          if(!(existingUser instanceof User)){
-              throw createError(401, 'the provided user does not exist or in invalid state');
-          }
-          const baseUrl = `${req.protocol}://${req.get('host')}`;
-          const OTPObject = createOTP(parseInt(process.env.USER_OTP_LENGTH));
-          let url = `${baseUrl}/users/verify-account/${existingUser._id}/${OTPObject.clearOTP}`;
-          const email = existingUser.email;
-          await SecretCode.deleteMany({email});
-          await SecretCode.create({email, code:OTPObject.encryptedOTP});
-          await emailService.sendEmail(email, emailService.templates.RESEND_CODE, {activationUrl: url});
-          logger.info({
-              message: 'closing resendCode()',
-              remoteAddress: req.connection.remoteAddress,
-          })
-          res.send();
-      }catch (e) {
-          e.label= 'server.endpoint.get.resend-code.userController.resendCode';
-          debug(`error in user controller ${e.message} `)
-          if (!(e.errors instanceof Object))
-              e.errors = {
-                  globalMessage: e.message,
-              };
-          next(e);
-      }
+        try {
+            requestValidationResult(req);
+            const {userName} = req.params;
+            const logger = createLogger('server.endpoint.get.resend-code.userController.resendCode')
+            logger.info({
+                message: 'enter resendCode()',
+                remoteAddress: req.connection.remoteAddress,
+                body: JSON.stringify(userName)
+            })
+            const filter = {
+                userName,
+                status: User.Statuses.NOT_INITIALIZED
+            }
+            const existingUser = await User.findOne(filter);
+            if (!(existingUser instanceof User)) {
+                throw createError(401, 'the provided user does not exist or in invalid state');
+            }
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            const OTPObject = createOTP(parseInt(process.env.USER_OTP_LENGTH));
+            let url = `${baseUrl}/users/verify-account/${existingUser._id}/${OTPObject.clearOTP}`;
+            const email = existingUser.email;
+            await SecretCode.deleteMany({email});
+            await SecretCode.create({email, code: OTPObject.encryptedOTP});
+            await emailService.sendEmail(email, emailService.templates.RESEND_CODE, {activationUrl: url});
+            logger.info({
+                message: 'closing resendCode()',
+                remoteAddress: req.connection.remoteAddress,
+            })
+            res.send();
+        } catch (e) {
+            e.label = 'server.endpoint.get.resend-code.userController.resendCode';
+            debug(`error in user controller ${e.message} `)
+            if (!(e.errors instanceof Object))
+                e.errors = {
+                    globalMessage: e.message,
+                };
+            next(e);
+        }
 
     },
     /**
@@ -243,7 +244,7 @@ export default {
      * @returns {Promise<void>}
      */
     async forgotPassword(req, res, next) {
-        try{
+        try {
             requestValidationResult(req);
             const {userName} = req.body;
             const logger = createLogger('server.endpoint.post.forgot-password.userController.forgotPassword')
@@ -253,25 +254,25 @@ export default {
                 body: JSON.stringify(userName)
             })
             const existingUser = await User.findOne({userName});
-            if(!(existingUser instanceof User)){
+            if (!(existingUser instanceof User)) {
                 throw createError(401, 'the provided user does not exist');
             }
             const OTPObject = createOTP(parseInt(process.env.USER_OTP_LENGTH));
             const baseUrl = `${req.protocol}://${req.get('host')}`;
-            const url = `${baseUrl}/users/reset-password/${existingUser._id}/${OTPObject.clearOTP}`;
+            const url = `${baseUrl}/users/reset-password/${OTPObject.clearOTP}`;
             const email = existingUser.email;
             await SecretCode.deleteMany({email});
-            await SecretCode.create({email, code:OTPObject.encryptedOTP});
-            await emailService.sendEmail(email, emailService.templates.FORGOT_PASSWORD, {resetUrl:url});
+            await SecretCode.create({email, code: OTPObject.encryptedOTP});
+            await emailService.sendEmail(email, emailService.templates.FORGOT_PASSWORD, {resetUrl: url});
             logger.info({
                 message: 'closing forgotPassword()',
                 remoteAddress: req.connection.remoteAddress,
             })
             res.send();
 
-        }catch (e) {
-            e.label= 'server.endpoint.get.forgot-password.userController.forgotPassword';
-            if(!(e.errors instanceof Object)) {
+        } catch (e) {
+            e.label = 'server.endpoint.get.forgot-password.userController.forgotPassword';
+            if (!(e.errors instanceof Object)) {
                 e.errors = {
                     globalMessage: e.message
                 }
@@ -289,15 +290,15 @@ export default {
      * 3)save the new user password
      * 4)delete the SecretCode
      * 5)send confirmation email
+     * 6)Login the user in, send JWT
      * @returns {Promise<void>}
      */
     async resetPassword(req, res, next) {
         requestValidationResult(req);
         const session = await User.startSession();
-        const transaction = session.startTransaction();
-        try{
-            const {code} = req.params;
-            const filter = {code:hashOTP(code)};
+        session.startTransaction();
+        try {
+            const filter = {code: hashOTP(req.params.code)};
             const update = {
                 updatedAt: new Date()
             }
@@ -306,25 +307,77 @@ export default {
                 new: true,
                 runValidators: true
             }
-            const existingCode =  await SecretCode.findOneAndUpdate(filter,update,opts);
-            if(!(existingCode instanceof SecretCode)){
-                throw createError(401,'the provided code does not exist, please generate a new code');
+            const logger = createLogger('server.endpoint.post.reset-password.userController.resetPassword');
+            const existingCode = await SecretCode.findOneAndUpdate(filter, update, opts);
+            if (!(existingCode instanceof SecretCode)) {
+                throw createError(401, 'the provided code does not exist, please generate a new code');
             }
 
-            await User.findOneAndUpdate({email:existingCode.email},)
+            const existingUser = await User.findOneAndUpdate({email: existingCode.email}, update, opts);
+            if (!(existingUser instanceof User)) {
+                throw createError(401, 'user does not exist');
+            }
+            logger.info({
+                message: 'enter resetPassword()',
+                remoteAddress: req.connection.remoteAddress,
+                body: JSON.stringify(filter),
+                correlation: session.id
+            })
+            existingUser.password = req.body.password;
+            existingUser.passwordChangedAt = new Date();
+            //we don't use findOneAnUpdate here because we want the presave middleware in User to be triggered
+            await existingUser.save();
 
-        }catch (e) {
+            await SecretCode.deleteMany({email: existingCode.email}, {session});
 
+            await emailService.sendEmail(existingUser.email, emailService.templates.RESET_PASSWORD);
+            await session.commitTransaction();
+            const token = await signToken({id: existingUser._id});
+            // logging end function
+            logger.info({
+                message: 'closing resetPassword()',
+                remoteAddress: req.connection.remoteAddress,
+                correlation: session.id
+            })
+            res.send({token});
+        } catch (e) {
+            await session.abortTransaction();
+            // add the session ID to the error so it can be logged
+            e.correlation = session.id;
+            e.label = 'server.endpoint.post.reset-password.userController.resetPassword';
+            debug(`error in user controller ${e.message} `)
+            // For errors returned from asynchronous functions invoked by route handlers and middleware, you must pass
+            // them to the next() function, where Express or your custom error handler will catch and process them
+            if (!(e.errors instanceof Object))
+                e.errors = {
+                    globalMessage: e.message,
+                };
+            next(e);
+
+        } finally {
+            session.endSession();
         }
 
     },
 
-    getMyProfile(req,res,next) {
+    getMyProfile(req, res, next) {
         res.send(req.user);
     },
 
-    deleteUser(req,res,next) {
-        //User.fin
-        res.send('ok');
+    async deleteUser(req, res, next) {
+        try{
+           requestValidationResult(req);
+           const newUser = await User.findOneAndUpdate({_id:req.params.userID},{status: User.Statuses.DEACTIVE},{new: true});
+           if(!(newUser instanceof User)){
+               throw createError(401, 'the provided user does not exist');
+           }
+           res.status(204).send();
+        }catch (e) {
+            if (!(e.errors instanceof Object))
+                e.errors = {
+                    globalMessage: e.message,
+                };
+            next(e);
+        }
     }
 }

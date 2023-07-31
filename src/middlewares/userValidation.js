@@ -27,11 +27,11 @@ import User from "../models/user.js";
             }
          }
  */
-const validate =  (method) => {
-    switch (method) {
+const validate =  (req, res,next, methodName) => {
+    switch (methodName) {
         case 'createUser': {
-            // return an array of middleware validator methods (Validation Chain) to the routing method.
-            // The router method takes a single callback, as many callback arguments as you want, or an array of
+            // return an array of middleware validator methods (Validation Chain) to the routing methodName.
+            // The router methodName takes a single callback, as many callback arguments as you want, or an array of
             // callback functions. Each function is part of the middleware chain, and will be called in the order it is
             // added to the chain (unless a preceding function completes the request).
             return [
@@ -73,8 +73,10 @@ const validate =  (method) => {
                 body('dob', 'Date of birth is invalid')
                     .optional({checkFalsy: true})
                     .isISO8601()
-                    .toDate()
+                    .toDate(),
+                next()
             ]
+
         }
 
         case 'verifyUser': {
@@ -83,7 +85,8 @@ const validate =  (method) => {
                     .exists()
                     .isMongoId(),
                 param('code' , 'Invalid URL')
-                    .exists()
+                    .exists(),
+                next()
             ]
         }
 
@@ -91,7 +94,8 @@ const validate =  (method) => {
             return [
                 param('userName')
                     .exists()
-                    .withMessage('Please enter your userName')
+                    .withMessage('Please enter your userName'),
+                next()
             ]
         }
 
@@ -103,14 +107,16 @@ const validate =  (method) => {
                     .escape(),
                 body('password')
                     .exists()
-                    .withMessage('please enter your password')
+                    .withMessage('please enter your password'),
+                next()
             ]
         }
         case 'delete':{
             return[
-                param('userID', 'Invalid URL')
+                param('userID', 'Invalid UserID')
                     .exists()
                     .isMongoId(),
+                next()
             ]
         }
         case 'forgotPassword': {
@@ -120,16 +126,32 @@ const validate =  (method) => {
                     .withMessage('Please enter your username')
                     .trim()
                     .isLength({min:2,max:100})
-                    .escape()
+                    .escape(),
+                next()
             ]
         }
         case 'resetPassword': {
             return[
                 param('code','Invalid URL')
+                    .exists(),
+                body('password','please enter your password')
                     .exists()
+                    .isStrongPassword()
+                    .withMessage('The password must be 8+ chars long and contain a number, an uppercase and special character'),
+                body('confirmPassword')
+                    .exists()
+                    .withMessage('please enter the password confirmation')
+                    .custom((value,{req})=>{
+                        if(value !== req.body.password){
+                            throw new Error('Password confirmation does not match password')
+                        }
+                        return true;
+                    }),
+                next()
             ]
         }
     }
+
 }
 
 export default validate;
